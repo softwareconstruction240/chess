@@ -1,6 +1,6 @@
-# BYU CS 240 Chess
+# ♕ BYU CS 240 Chess
 
-♕ Chess project for BYU CS 240
+Chess project for BYU CS 240
 
 ## IntelliJ Support
 
