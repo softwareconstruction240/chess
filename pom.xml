@@ -2,9 +2,9 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>edu.byu</groupId>
+    <groupId>edu.byu.cs240</groupId>
     <artifactId>chess</artifactId>
-    <version>1.0</version>
+    <version>1.0.0</version>
 
     <properties>
         <maven.compiler.source>20</maven.compiler.source>
@@ -16,6 +16,8 @@
 
     <modules>
         <module>shared</module>
+        <module>client</module>
+        <module>server</module>
     </modules>
 
     <dependencies>

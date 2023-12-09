@@ -8,21 +8,24 @@ Open the project directory in IntelliJ and you will be able to develop, run, and
 
 ## Maven Support
 
-You can use the following commands to build and package your code.
+You can use the following commands to build, test, package, and run your code.
 
-| Command                   | Description                              |
-| ------------------------- | ---------------------------------------- |
-| `mvn compile`             | Builds the code                          |
-| `mvn package`             | Run the tests and build an Uber jar file |
-| `mvn package -DskipTests` | Build an Uber jar file                   |
-| `mvn exec:java`           | Build the code and run `Main`            |
+| Command                    | Description                                     |
+| -------------------------- | ----------------------------------------------- |
+| `mvn compile`              | Builds the code                                 |
+| `mvn package`              | Run the tests and build an Uber jar file        |
+| `mvn package -DskipTests`  | Build an Uber jar file                          |
+| `mvn install`              | Installs the packages into the local repository |
+| `mvn -pl client exec:java` | Build the code and run the client `Main`        |
 
-How these commands execute are defined by the `pom.xml` file. It also contains dependency definitions for all the packages required to complete the Chess project.
+These commands are configured by the `pom.xml` (Project Object Model) files. There is a POM file in the root of the project, and one in each of the modules. The root POM defines any global dependencies and references the module POM files.
 
 ### Running the program using Java
 
 Once you have compiled your project into an uber jar, you can execute it with the following command.
 
 ```sh
-java -cp target/chess-jar-with-dependencies.jar Main
+java -cp client/target/client-jar-with-dependencies.jar Main
+
+♕ 240 Chess Client: chess.ChessPiece@7852e922
 ```
