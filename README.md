@@ -4,7 +4,7 @@ Chess project for BYU CS 240
 
 ## IntelliJ Support
 
-Open the project directory in IntelliJ and you will have a be able to develop, run, and debug your code using an IDE.
+Open the project directory in IntelliJ and you will be able to develop, run, and debug your code using an IDE.
 
 ## Maven Support
 
