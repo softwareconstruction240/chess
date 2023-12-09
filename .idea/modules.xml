@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/chess.iml" filepath="$PROJECT_DIR$/chess.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shared/shared.iml" filepath="$PROJECT_DIR$/shared/shared.iml" />
     </modules>
   </component>
 </project>
