@@ -20,6 +20,7 @@
         <module>server</module>
     </modules>
 
+
     <dependencies>
         <dependency>
             <groupId>com.google.code.gson</groupId>

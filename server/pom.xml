@@ -57,7 +57,7 @@
         <dependency>
             <groupId>edu.byu.cs240</groupId>
             <artifactId>shared</artifactId>
-            <version>1.0</version>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
@@ -78,6 +78,8 @@
             <groupId>edu.byu.cs240</groupId>
             <artifactId>passoff-dependencies</artifactId>
             <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/passoff-dependencies.jar</systemPath>
         </dependency>
     </dependencies>
 
