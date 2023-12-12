@@ -54,11 +54,19 @@
     </build>
 
     <dependencies>
+    <dependencies>
         <dependency>
             <groupId>edu.byu.cs240</groupId>
             <artifactId>shared</artifactId>
-            <version>1.0.0</version>
+            <version>1.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.tyrus.bundles</groupId>
+            <artifactId>tyrus-standalone-client</artifactId>
+            <version>1.15</version>
+        </dependency>
+    </dependencies>
+
     </dependencies>
 
 </project>
