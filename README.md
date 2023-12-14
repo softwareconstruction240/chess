@@ -26,7 +26,7 @@ These commands are configured by the `pom.xml` (Project Object Model) files. The
 Once you have compiled your project into an uber jar, you can execute it with the following command.
 
 ```sh
-java -cp client/target/client-jar-with-dependencies.jar Main
+java -jar client/target/client-jar-with-dependencies.jar
 
 ♕ 240 Chess Client: chess.ChessPiece@7852e922
 ```
