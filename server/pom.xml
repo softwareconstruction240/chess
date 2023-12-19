@@ -16,6 +16,11 @@
 
     <build>
         <finalName>server</finalName>
+        <resources>
+            <resource>
+                <directory>web</directory>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
