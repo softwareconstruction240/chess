@@ -3,7 +3,6 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>server</artifactId>
-    <groupId>edu.byu.cs240</groupId>
     <version>1.0.0</version>
 
     <parent>
@@ -18,7 +17,7 @@
         <finalName>server</finalName>
         <resources>
             <resource>
-                <directory>web</directory>
+                <directory>src/main/resources</directory>
             </resource>
         </resources>
         <plugins>
@@ -84,7 +83,7 @@
             <artifactId>passoff-dependencies</artifactId>
             <version>1.0</version>
             <scope>system</scope>
-            <systemPath>${basedir}/lib/passoff-dependencies.jar</systemPath>
+            <systemPath>${pom.basedir}/lib/passoff-dependencies.jar</systemPath>
         </dependency>
     </dependencies>
 
