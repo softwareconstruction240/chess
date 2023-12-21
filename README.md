@@ -1,6 +1,12 @@
 # ♕ BYU CS 240 Chess
 
-Chess project for BYU CS 240
+This project demonstrates mastery of proper software design, client/server architecture, networking using HTTP and WebSocket, database persistence, unit testing, serialization, and security.
+
+## 10k Architecture Overview
+
+The application implements a multiplayer chess server and a command line chess client.
+
+[![Sequence Diagram](10k-architecture.png)](https://sequencediagram.org/index.html#initialData=C4S2BsFMAIGEAtIGckCh0AcCGAnUBjEbAO2DnBElIEZVs8RCSzYKrgAmO3AorU6AGVIOAG4jUAEyzAsAIyxIYAERnzFkdKgrFIuaKlaUa0ALQA+ISPE4AXNABWAexDFoAcywBbTcLEizS1VZBSVbbVc9HGgnADNYiN19QzZSDkCrfztHFzdPH1Q-Gwzg9TDEqJj4iuSjdmoMopF7LywAaxgvJ3FC6wCLaFLQyHCdSriEseSm6NMBurT7AFcMaWAYOSdcSRTjTka+7NaO6C6emZK1YdHI-Qma6N6ss3nU4Gpl1ZkNrZwdhfeByy9hwyBA7mIT2KAyGGhuSWi9wuc0sAI49nyMG6ElQQA)
 
 ## IntelliJ Support
 
@@ -11,7 +17,7 @@ Open the project directory in IntelliJ in order to develop, run, and debug your 
 You can use the following commands to build, test, package, and run your code.
 
 | Command                    | Description                                     |
-|----------------------------|-------------------------------------------------|
+| -------------------------- | ----------------------------------------------- |
 | `mvn compile`              | Builds the code                                 |
 | `mvn package`              | Run the tests and build an Uber jar file        |
 | `mvn package -DskipTests`  | Build an Uber jar file                          |
