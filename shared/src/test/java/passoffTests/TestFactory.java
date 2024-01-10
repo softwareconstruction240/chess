@@ -1,8 +1,10 @@
 package passoffTests;
 
 import chess.*;
+import org.junit.jupiter.api.AssertionFailureBuilder;
 import org.junit.jupiter.api.Assertions;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -64,7 +66,34 @@ public class TestFactory {
         var testPiece = board.getPiece(startPosition);
         var validMoves = loadMoves(startPosition, endPositions);
 
-        Assertions.assertEquals(validMoves, testPiece.pieceMoves(board, startPosition), "Wrong moves");
+        movesEqual(validMoves, testPiece.pieceMoves(board, startPosition));
+    }
+
+    public static void movesEqual(Collection<ChessMove> validMoves, Collection<ChessMove> pieceMoves){
+        boolean isValid = true;
+        // makes sure all elements of validMoves are in pieceMoves (the student has given all necessary moves)
+        main: for (ChessMove move : validMoves) {
+            for (ChessMove secMove : pieceMoves) {
+                if (move.equals(secMove)) continue main;
+            }
+            isValid = false;
+            break;
+        }
+        // makes sure all elements of pieceMoves are in validMoves (the student has given only the necessary moves)
+        main: for (ChessMove move : pieceMoves) {
+            for (ChessMove secMove : validMoves) {
+                if (move.equals(secMove)) continue main;
+            }
+            isValid = false;
+            break;
+        }
+
+        if (!isValid) {
+            AssertionFailureBuilder.assertionFailure()
+                    .message("Wrong moves")
+                    .expected(validMoves)
+                    .actual(pieceMoves).buildAndThrow();
+        }
     }
 
     final static Map<Character, ChessPiece.PieceType> charToTypeMap = Map.of(
