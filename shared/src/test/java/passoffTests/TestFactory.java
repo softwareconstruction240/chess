@@ -63,9 +63,12 @@ public class TestFactory {
         var board = loadBoard(boardText);
         var testPiece = board.getPiece(startPosition);
         var validMoves = loadMoves(startPosition, endPositions);
-        var pieceMoves = new HashSet<>(testPiece.pieceMoves(board, startPosition));
 
-        Assertions.assertEquals(validMoves, pieceMoves, "Wrong moves");
+        var pieceMovesCollection = testPiece.pieceMoves(board, startPosition);
+        var pieceMovesSet = new HashSet<>(pieceMovesCollection);
+        Assertions.assertEquals(pieceMovesCollection.size(), pieceMovesSet.size(), "Each of the moves generated should be unique");
+
+        Assertions.assertEquals(validMoves, pieceMovesSet, "Wrong moves");
     }
 
     final static Map<Character, ChessPiece.PieceType> charToTypeMap = Map.of(
