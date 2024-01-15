@@ -66,7 +66,8 @@ public class TestFactory {
 
         var pieceMovesCollection = testPiece.pieceMoves(board, startPosition);
         var pieceMovesSet = new HashSet<>(pieceMovesCollection);
-        Assertions.assertEquals(pieceMovesCollection.size(), pieceMovesSet.size(), "Each of the moves generated should be unique");
+        Assertions.assertEquals(pieceMovesCollection.size(), pieceMovesSet.size(),
+            "Each of the generated moves should be unique");
 
         Assertions.assertEquals(validMoves, pieceMovesSet, "Wrong moves");
     }
