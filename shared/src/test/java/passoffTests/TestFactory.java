@@ -3,6 +3,7 @@ package passoffTests;
 import chess.*;
 import org.junit.jupiter.api.Assertions;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -64,9 +65,11 @@ public class TestFactory {
         var testPiece = board.getPiece(startPosition);
         var validMoves = loadMoves(startPosition, endPositions);
 
-        var pieceMovesCollection = testPiece.pieceMoves(board, startPosition);
-        var pieceMovesSet = new HashSet<>(pieceMovesCollection);
-        Assertions.assertEquals(pieceMovesCollection.size(), pieceMovesSet.size(),
+        assertMovesEqual(valid, testPiece.pieceMoves(board, startPosition));
+    }
+    static public void assertMovesEqual(HasSet<ChessMoves> validMoves, Collection<ChessMove> providedMoves) {
+        var pieceMovesSet = new HashSet<>(providedMoves);
+        Assertions.assertEquals(providedMoves.size(), pieceMovesSet.size(),
             "Each of the generated moves should be unique");
 
         Assertions.assertEquals(validMoves, pieceMovesSet, "Wrong moves");
