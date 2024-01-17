@@ -23,7 +23,7 @@ You can use the following commands to build, test, package, and run your code.
 | `mvn package -DskipTests`  | Build an Uber jar file                          |
 | `mvn install`              | Installs the packages into the local repository |
 | `mvn test`                 | Run all the tests                               |
-| `mvn -pl shared tests`     | Run all the shared tests                        |
+| `mvn -pl shared test`     | Run all the shared tests                        |
 | `mvn -pl client exec:java` | Build and run the client `Main`                 |
 | `mvn -pl server exec:java` | Build and run the server `Main`                 |
 
