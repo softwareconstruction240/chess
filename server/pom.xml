@@ -64,6 +64,13 @@
             <version>1.0.0</version>
         </dependency>
         <dependency>
+            <groupId>edu.byu.cs240</groupId>
+            <artifactId>shared</artifactId>
+            <version>1.0.0</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.30</version>
