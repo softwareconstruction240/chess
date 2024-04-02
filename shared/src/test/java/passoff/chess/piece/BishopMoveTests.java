@@ -1,8 +1,8 @@
-package passoffTests.chessTests.chessPieceTests;
+package passoff.chess.piece;
 
 import org.junit.jupiter.api.Test;
 
-import static passoffTests.TestFactory.*;
+import static passoff.TestFactory.*;
 
 public class BishopMoveTests {
 
