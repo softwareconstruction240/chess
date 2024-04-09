@@ -1,256 +1,220 @@
-package passoffTests.chessTests.chessPieceTests;
+package passoff.chess.piece;
 
-import chess.*;
 import org.junit.jupiter.api.Test;
-import passoffTests.TestFactory;
 
-import java.util.HashSet;
+import static passoff.TestFactory.*;
 
-import static passoffTests.TestFactory.*;
-
-public class PawnMoveTests {
+public class KnightMoveTests {
 
     @Test
-    public void pawnMiddleOfBoardWhite() {
+    public void knightMiddleOfBoardWhite() {
+        validateMoves("""
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | |N| | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        """,
+                startPosition(5, 5),
+                endPositions(new int[][]{
+                        {7, 6}, {6, 7}, {4, 7}, {3, 6}, {3, 4}, {4, 3}, {6, 3}, {7, 4},
+                })
+        );
+    }
+
+    @Test
+    public void knightMiddleOfBoardBlack() {
+        validateMoves("""
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | |n| | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        """,
+                startPosition(5, 5),
+                endPositions(new int[][]{
+                        {7, 6}, {6, 7}, {4, 7}, {3, 6}, {3, 4}, {4, 3}, {6, 3}, {7, 4},
+                })
+        );
+    }
+
+
+    @Test
+    public void knightEdgeOfBoardLeft() {
         validateMoves("""
                         | | | | | | | | |
                         | | | | | | | | |
                         | | | | | | | | |
                         | | | | | | | | |
-                        | | | |P| | | | |
+                        |n| | | | | | | |
                         | | | | | | | | |
                         | | | | | | | | |
                         | | | | | | | | |
                         """,
-                startPosition(4, 4),
-                endPositions(new int[][]{{5, 4}})
+                startPosition(4, 1),
+                endPositions(new int[][]{{6, 2}, {5, 3}, {3, 3}, {2, 2}})
         );
     }
 
     @Test
-    public void pawnMiddleOfBoardBlack() {
-        validateMoves("""
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | | |p| | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        """,
-                startPosition(4, 4),
-                endPositions(new int[][]{{3, 4}})
-        );
-    }
-
-
-    @Test
-    public void pawnInitialMoveWhite() {
+    public void knightEdgeOfBoardRight() {
         validateMoves("""
                         | | | | | | | | |
                         | | | | | | | | |
                         | | | | | | | | |
                         | | | | | | | | |
                         | | | | | | | | |
+                        | | | | | | | |n|
                         | | | | | | | | |
-                        | | | | |P| | | |
                         | | | | | | | | |
                         """,
-                startPosition(2, 5),
-                endPositions(new int[][]{{3, 5}, {4, 5}})
+                startPosition(3, 8),
+                endPositions(new int[][]{{1, 7}, {2, 6}, {4, 6}, {5, 7}})
         );
     }
 
     @Test
-    public void pawnInitialMoveBlack() {
-        validateMoves("""
-                        | | | | | | | | |
-                        | | |p| | | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        """,
-                startPosition(7, 3),
-                endPositions(new int[][]{{6, 3}, {5, 3}})
-        );
-    }
-
-
-    @Test
-    public void pawnPromotionWhite() {
-        validatePromotion("""
-                        | | | | | | | | |
-                        | | |P| | | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        """,
-                startPosition(7, 3),
-                endPositions(new int[][]{{8, 3}})
-        );
-    }
-
-
-    @Test
-    public void edgePromotionBlack() {
-        validatePromotion("""
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | |p| | | | | |
-                        | | | | | | | | |
-                        """,
-                startPosition(2, 3),
-                endPositions(new int[][]{{1, 3}})
-        );
-    }
-
-
-    @Test
-    public void pawnPromotionCapture() {
-        validatePromotion("""
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | |p| | | | | | |
-                        |N| | | | | | | |
-                        """,
-                startPosition(2, 2),
-                endPositions(new int[][]{{1, 1}, {1, 2}})
-        );
-    }
-
-
-    @Test
-    public void pawnAdvanceBlockedWhite() {
-        validateMoves("""
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | | |n| | | | |
-                        | | | |P| | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        """,
-                startPosition(4, 4),
-                endPositions(new int[][]{})
-        );
-    }
-
-    @Test
-    public void pawnAdvanceBlockedBlack() {
-        validateMoves("""
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | | |p| | | | |
-                        | | | |r| | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        """,
-                startPosition(5, 4),
-                endPositions(new int[][]{})
-        );
-    }
-
-
-    @Test
-    public void pawnAdvanceBlockedDoubleMoveWhite() {
+    public void knightEdgeOfBoardBottom() {
         validateMoves("""
                         | | | | | | | | |
                         | | | | | | | | |
                         | | | | | | | | |
                         | | | | | | | | |
-                        | | | | | | |p| |
                         | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | |N| | |
+                        """,
+                startPosition(1, 6),
+                endPositions(new int[][]{{2, 4}, {3, 5}, {3, 7}, {2, 8}})
+        );
+    }
+
+    @Test
+    public void knightEdgeOfBoardTop() {
+        validateMoves("""
+                        | | |N| | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        """,
+                startPosition(8, 3),
+                endPositions(new int[][]{{7, 5}, {6, 4}, {6, 2}, {7, 1}})
+        );
+    }
+
+
+    @Test
+    public void knightCornerOfBoardBottomRight() {
+        validateMoves("""
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | |N|
+                        """,
+                startPosition(1, 8),
+                endPositions(new int[][]{{2, 6}, {3, 7}})
+        );
+    }
+
+    @Test
+    public void knightCornerOfBoardTopRight() {
+        validateMoves("""
+                        | | | | | | | |N|
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        """,
+                startPosition(8, 8),
+                endPositions(new int[][]{{6, 7}, {7, 6}})
+        );
+    }
+
+    @Test
+    public void knightCornerOfBoardTopLeft() {
+        validateMoves("""
+                        |n| | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        """,
+                startPosition(8, 1),
+                endPositions(new int[][]{{7, 3}, {6, 2}})
+        );
+    }
+
+    @Test
+    public void knightCornerOfBoardBottomLeft() {
+        validateMoves("""
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        |n| | | | | | | |
+                        """,
+                startPosition(1, 1),
+                endPositions(new int[][]{{2, 3}, {3, 2}})
+        );
+    }
+
+
+    @Test
+    public void knightBlocked() {
+        validateMoves("""
+                        | | | | | | | | |
+                        | | | |R| | | | |
                         | | | | | | |P| |
-                        | | | | | | | | |
-                        """,
-                startPosition(2, 7),
-                endPositions(new int[][]{{3, 7}})
-        );
-    }
-
-    @Test
-    public void pawnAdvanceBlockedDoubleMoveBlack() {
-        validateMoves("""
-                        | | | | | | | | |
-                        | | |p| | | | | |
-                        | | |p| | | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
+                        | | | | |N| | | |
+                        | | |N| | | | | |
                         | | | | | | | | |
                         | | | | | | | | |
                         | | | | | | | | |
                         """,
-                startPosition(7, 3),
-                endPositions(new int[][]{})
+                startPosition(5, 5),
+                endPositions(new int[][]{{3, 4}, {3, 6}, {4, 7}, {7, 6}, {6, 3}})
         );
     }
 
 
     @Test
-    public void pawnCaptureWhite() {
+    public void knightCaptureEnemy() {
         validateMoves("""
                         | | | | | | | | |
                         | | | | | | | | |
                         | | | | | | | | |
-                        | | |r| |N| | | |
-                        | | | |P| | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        """,
-                startPosition(4, 4),
-                endPositions(new int[][]{{5, 3}, {5, 4}})
-        );
-    }
-
-    @Test
-    public void pawnCaptureBlack() {
-        validateMoves("""
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | | |p| | | | |
-                        | | | |n|R| | | |
+                        | | | | |n| | | |
+                        | | |N| | | | | |
+                        | | | |P| |R| | |
                         | | | | | | | | |
                         | | | | | | | | |
                         """,
-                startPosition(4, 4),
-                endPositions(new int[][]{{3, 5}})
+                startPosition(5, 5),
+                endPositions(new int[][]{{7, 6}, {6, 7}, {4, 7}, {3, 6}, {3, 4}, {4, 3}, {6, 3}, {7, 4}})
         );
     }
-
-    private void validatePromotion(String boardText, ChessPosition startPosition, int[][] endPositions) {
-        var board = TestFactory.loadBoard(boardText);
-        var testPiece = board.getPiece(startPosition);
-        var validMoves = new HashSet<ChessMove>();
-        for (var endPosition : endPositions) {
-            var end = startPosition(endPosition[0], endPosition[1]);
-            validMoves.add(TestFactory.getNewMove(startPosition, end, ChessPiece.PieceType.QUEEN));
-            validMoves.add(TestFactory.getNewMove(startPosition, end, ChessPiece.PieceType.BISHOP));
-            validMoves.add(TestFactory.getNewMove(startPosition, end, ChessPiece.PieceType.ROOK));
-            validMoves.add(TestFactory.getNewMove(startPosition, end, ChessPiece.PieceType.KNIGHT));
-        }
-
-        validateMoves(board, testPiece, startPosition, validMoves);
-    }
-
 }

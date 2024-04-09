@@ -1,4 +1,4 @@
-package passoffTests.chessTests;
+package passoff.chess;
 
 import chess.ChessMove;
 import chess.ChessPiece;
@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 import java.util.HashSet;
 import java.util.Set;
 
-import static passoffTests.TestFactory.getNewMove;
-import static passoffTests.TestFactory.getNewPosition;
+import static passoff.TestFactory.getNewMove;
+import static passoff.TestFactory.getNewPosition;
 
 public class ChessMoveTests {
     private ChessMove original;
