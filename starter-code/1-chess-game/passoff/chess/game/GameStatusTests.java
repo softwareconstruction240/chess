@@ -3,7 +3,7 @@ package passoff.chess.game;
 import chess.*;
 import org.junit.jupiter.api.*;
 
-import static passoff.TestFactory.*;
+import static passoff.chess.TestUtilities.loadBoard;
 
 public class GameStatusTests {
 

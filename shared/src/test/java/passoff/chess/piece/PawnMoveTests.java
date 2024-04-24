@@ -4,11 +4,11 @@ import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
 import org.junit.jupiter.api.Test;
-import passoff.TestFactory;
 
 import java.util.HashSet;
 
-import static passoff.TestFactory.validateMoves;
+import static passoff.chess.TestUtilities.loadBoard;
+import static passoff.chess.TestUtilities.validateMoves;
 
 public class PawnMoveTests {
 
@@ -241,7 +241,7 @@ public class PawnMoveTests {
     }
 
     private void validatePromotion(String boardText, ChessPosition startingPosition, int[][] endPositions) {
-        var board = TestFactory.loadBoard(boardText);
+        var board = loadBoard(boardText);
         var testPiece = board.getPiece(startingPosition);
         var validMoves = new HashSet<ChessMove>();
         for (var endPosition : endPositions) {

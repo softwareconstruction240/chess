@@ -5,7 +5,6 @@ import chess.ChessMove;
 import chess.ChessPosition;
 import com.google.gson.GsonBuilder;
 import org.junit.jupiter.api.*;
-import passoff.TestFactory;
 import passoff.model.*;
 import passoff.websocket.TestCommand;
 import passoff.websocket.TestMessage;

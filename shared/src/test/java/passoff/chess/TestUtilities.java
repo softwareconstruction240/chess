@@ -1,7 +1,6 @@
-package passoff;
+package passoff.chess;
 
 import chess.*;
-import com.google.gson.GsonBuilder;
 import org.junit.jupiter.api.Assertions;
 
 import java.util.Collection;
@@ -9,12 +8,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Used for testing your code
- */
-public class TestFactory {
-    //Chess tests utilities
-    // ------------------------------------------------------------------------------------------------------------------
+public class TestUtilities {
     static public void validateMoves(String boardText, ChessPosition startPosition, int[][] endPositions) {
         var board = loadBoard(boardText);
         var testPiece = board.getPiece(startPosition);
@@ -83,31 +77,4 @@ public class TestFactory {
         Assertions.assertEquals(validMoves, actualMoves,
                 "ChessGame validMoves did not return the correct moves");
     }
-    // ------------------------------------------------------------------------------------------------------------------
-
-
-    // Websocket Tests
-    // ------------------------------------------------------------------------------------------------------------------
-    public static Long getMessageTime() {
-        /*
-         * Changing this will change how long tests will wait for the server to send
-         * messages.
-         * 3000 Milliseconds (3 seconds) will be enough for most computers. Feel free to
-         * change as you see fit,
-         * just know increasing it can make tests take longer to run.
-         * (On the flip side, if you've got a good computer feel free to decrease it)
-         */
-        return 3000L;
-    }
-
-    public static GsonBuilder getGsonBuilder() {
-        /*                  **NOT APPLICABLE TO MOST STUDENTS**
-         * If you would like to change the way the web socket test cases serialize
-         * or deserialize chess objects like ChessMove, you may add type adapters here.
-         */
-        GsonBuilder builder = new GsonBuilder();
-        // builder.registerTypeAdapter(ChessMove.class, /*type adapter or json serializer */);
-        return builder;
-    }
-    // ------------------------------------------------------------------------------------------------------------------
 }

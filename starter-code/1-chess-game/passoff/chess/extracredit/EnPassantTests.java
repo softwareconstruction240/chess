@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static passoff.TestFactory.loadBoard;
+import static passoff.chess.TestUtilities.*;
 
 /**
  * Tests if the ChessGame implementation can handle En Passant moves

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static passoff.TestFactory.loadBoard;
+import static passoff.chess.TestUtilities.loadBoard;
 
 public class ChessBoardTests {
 
