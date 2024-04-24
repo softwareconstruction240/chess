@@ -1,8 +1,10 @@
 package passoff.chess;
 
-import chess.*;
-import org.junit.jupiter.api.*;
-import passoff.TestFactory;
+import chess.ChessPosition;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -13,9 +15,9 @@ public class ChessPositionTests {
     private ChessPosition different;
     @BeforeEach
     public void setUp() {
-        original = passoff.TestFactory.getNewPosition(3, 7);
-        equal = passoff.TestFactory.getNewPosition(3, 7);
-        different = TestFactory.getNewPosition(7, 3);
+        original = new ChessPosition(3, 7);
+        equal = new ChessPosition(3, 7);
+        different = new ChessPosition(7, 3);
     }
 
     @Test
