@@ -1,8 +1,9 @@
 package passoff.chess.piece;
 
+import chess.ChessPosition;
 import org.junit.jupiter.api.Test;
 
-import static passoff.TestFactory.*;
+import static passoff.chess.TestUtilities.validateMoves;
 
 public class QueenMoveTests {
     @Test
@@ -17,8 +18,8 @@ public class QueenMoveTests {
                         | | | | | | | | |
                         | | | | | | | | |
                         """,
-                startPosition(7, 7),
-                endPositions(new int[][]{
+                new ChessPosition(7, 7),
+                new int[][]{
                         {8, 7},
                         {8, 8},
                         {7, 8},
@@ -27,7 +28,7 @@ public class QueenMoveTests {
                         {6, 6}, {5, 5}, {4, 4}, {3, 3}, {2, 2}, {1, 1},
                         {7, 6}, {7, 5}, {7, 4}, {7, 3}, {7, 2}, {7, 1},
                         {8, 6},
-                })
+                }
         );
     }
 
@@ -44,14 +45,14 @@ public class QueenMoveTests {
                         |P| |n| | | | | |
                         | | | | | | | | |
                         """,
-                startPosition(4, 1),
-                endPositions(new int[][]{
+                new ChessPosition(4, 1),
+                new int[][]{
                         {5, 1}, {6, 1}, {7, 1}, {8, 1},
                         {5, 2},
                         {4, 2}, {4, 3}, {4, 4},
                         {3, 1}, {3, 2},
                         {2, 3},
-                })
+                }
         );
     }
 
@@ -68,8 +69,8 @@ public class QueenMoveTests {
                         |P|R| | | | | | |
                         |Q|K| | | | | | |
                         """,
-                startPosition(1, 1),
-                endPositions(new int[][]{})
+                new ChessPosition(1, 1),
+                new int[][]{}
         );
     }
 }

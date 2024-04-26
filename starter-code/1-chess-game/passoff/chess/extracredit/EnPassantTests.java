@@ -5,7 +5,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import passoff.TestFactory;
+
+import static passoff.chess.TestUtilities.*;
 
 /**
  * Tests if the ChessGame implementation can handle En Passant moves
@@ -17,45 +18,20 @@ import passoff.TestFactory;
  */
 public class EnPassantTests {
 
-    private ChessBoard chessBoard;
-
-    @BeforeEach
-    public void setup() {
-        chessBoard = TestFactory.getNewBoard();
-    }
-
-
     @Test
     @DisplayName("White En Passant Right")
     public void enPassantWhiteRight() throws InvalidMoveException {
-
-        /*
-        | | | | | | | | |
-		| | |p| | | | | |
-		| | | | | | | | |
-		| |P| | | | | | |
-		| | | | | | | | |
-		| | | | | | | | |
-		| | | | | | | | |
-		| | | | | | | | |
-         */
-
-        //white pawn
-        ChessPiece pawn = TestFactory.getNewPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
-        ChessPosition position = TestFactory.getNewPosition(5, 2);
-        chessBoard.addPiece(position, pawn);
-
-        //black pawn that will double move
-        chessBoard.addPiece(TestFactory.getNewPosition(7, 3),
-                TestFactory.getNewPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
-
-        //set up game
-        ChessGame game = TestFactory.getNewGame();
-        game.setBoard(chessBoard);
-        game.setTeamTurn(ChessGame.TeamColor.BLACK);
-
-        //move black piece 2 spaces
-        game.makeMove(TestFactory.getNewMove(TestFactory.getNewPosition(7, 3), TestFactory.getNewPosition(5, 3), null));
+        ChessBoard board = loadBoard("""
+                | | | | | | | | |
+                | | |p| | | | | |
+                | | | | | | | | |
+                | |P| | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                """);
+        ChessMove setupMove = new ChessMove(new ChessPosition(7, 3), new ChessPosition(5, 3), null);
         /*
         | | | | | | | | |
 		| | | | | | | | |
@@ -67,58 +43,37 @@ public class EnPassantTests {
 		| | | | | | | | |
          */
 
-        //make sure pawn has En Passant move
-        ChessMove enPassantMove =
-                TestFactory.getNewMove(TestFactory.getNewPosition(5, 2), TestFactory.getNewPosition(6, 3), null);
-        Assertions.assertTrue(game.validMoves(position).contains(enPassantMove),
-                "ChessGame validMoves did not contain a valid En Passant move");
+        ChessMove enPassantMove = new ChessMove(new ChessPosition(5, 2), new ChessPosition(6, 3), null);
+        ChessBoard endBoard = loadBoard("""
+                | | | | | | | | |
+                | | | | | | | | |
+                | | |P| | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                """);
 
-        //en passant move works correctly
-        Assertions.assertDoesNotThrow(() -> game.makeMove(enPassantMove));
-        Assertions.assertNull(game.getBoard().getPiece(TestFactory.getNewPosition(5, 2)),
-                "After En Passant move, piece still present at original position");
-        Assertions.assertNull(game.getBoard().getPiece(TestFactory.getNewPosition(5, 3)),
-                "After En Passant move, piece still present at taken pawn position");
-        ChessPiece foundPawn = game.getBoard().getPiece(TestFactory.getNewPosition(6, 3));
-        Assertions.assertNotNull(foundPawn, "After En Passant move, no piece present at final position");
-        Assertions.assertEquals(ChessPiece.PieceType.PAWN, foundPawn.getPieceType(),
-                "Found piece at pawn's position is not a pawn");
-        Assertions.assertEquals(ChessGame.TeamColor.WHITE, foundPawn.getTeamColor(),
-                "Found piece at pawn's position is the wrong team color");
+        assertValidEnPassant(board, ChessGame.TeamColor.BLACK, setupMove, enPassantMove, endBoard);
     }
 
 
     @Test
     @DisplayName("White En Passant Left")
     public void enPassantWhiteLeft() throws InvalidMoveException {
+        ChessBoard board = loadBoard("""
+                | | | | | | | | |
+                | | |p| | | | | |
+                | | | | | | | | |
+                | | | |P| | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                """);
 
-        /*
-        | | | | | | | | |
-		| | |p| | | | | |
-		| | | | | | | | |
-		| | | |P| | | | |
-		| | | | | | | | |
-		| | | | | | | | |
-		| | | | | | | | |
-		| | | | | | | | |
-         */
-
-        //white pawn
-        ChessPiece pawn = TestFactory.getNewPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
-        ChessPosition position = TestFactory.getNewPosition(5, 4);
-        chessBoard.addPiece(position, pawn);
-
-        //black pawn that will double move
-        chessBoard.addPiece(TestFactory.getNewPosition(7, 3),
-                TestFactory.getNewPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
-
-        //set up game
-        ChessGame game = TestFactory.getNewGame();
-        game.setBoard(chessBoard);
-        game.setTeamTurn(ChessGame.TeamColor.BLACK);
-
-        //move black piece 2 spaces
-        game.makeMove(TestFactory.getNewMove(TestFactory.getNewPosition(7, 3), TestFactory.getNewPosition(5, 3), null));
+        ChessMove setupMove = new ChessMove(new ChessPosition(7, 3), new ChessPosition(5, 3), null);
         /*
         | | | | | | | | |
 		| | | | | | | | |
@@ -129,59 +84,36 @@ public class EnPassantTests {
 		| | | | | | | | |
 		| | | | | | | | |
          */
+        ChessMove enPassantMove = new ChessMove(new ChessPosition(5, 4), new ChessPosition(6, 3), null);
+        ChessBoard endBoard = loadBoard("""
+                | | | | | | | | |
+                | | | | | | | | |
+                | | |P| | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                """);
 
-        //make sure pawn has En Passant move
-        ChessMove enPassantMove =
-                TestFactory.getNewMove(TestFactory.getNewPosition(5, 4), TestFactory.getNewPosition(6, 3), null);
-        Assertions.assertTrue(game.validMoves(position).contains(enPassantMove),
-                "ChessGame validMoves did not contain a valid En Passant move");
-
-        //en passant move works correctly
-        Assertions.assertDoesNotThrow(() -> game.makeMove(enPassantMove));
-        Assertions.assertNull(game.getBoard().getPiece(TestFactory.getNewPosition(5, 4)),
-                "After En Passant move, piece still present at original position");
-        Assertions.assertNull(game.getBoard().getPiece(TestFactory.getNewPosition(5, 3)),
-                "After En Passant move, piece still present at taken pawn position");
-        ChessPiece foundPawn = game.getBoard().getPiece(TestFactory.getNewPosition(6, 3));
-        Assertions.assertNotNull(foundPawn, "After En Passant move, no piece present at final position");
-        Assertions.assertEquals(ChessPiece.PieceType.PAWN, foundPawn.getPieceType(),
-                "Found piece at pawn's position is not a pawn");
-        Assertions.assertEquals(ChessGame.TeamColor.WHITE, foundPawn.getTeamColor(),
-                "Found piece at pawn's position is the wrong team color");
+        assertValidEnPassant(board, ChessGame.TeamColor.BLACK, setupMove, enPassantMove, endBoard);
     }
 
 
     @Test
     @DisplayName("Black En Passant Right")
     public void enPassantBlackRight() throws InvalidMoveException {
-
-        /*
-        | | | | | | | | |
-		| | | | | | | | |
-		| | | | | | | | |
-		| | | | | | | | |
-		| | | | | |p| | |
-		| | | | | | | | |
-		| | | | | | |P| |
-		| | | | | | | | |
-         */
-
-        //black pawn
-        ChessPiece pawn = TestFactory.getNewPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
-        ChessPosition position = TestFactory.getNewPosition(4, 6);
-        chessBoard.addPiece(position, pawn);
-
-        //white pawn that will double move
-        chessBoard.addPiece(TestFactory.getNewPosition(2, 7),
-                TestFactory.getNewPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
-
-        //set up game
-        ChessGame game = TestFactory.getNewGame();
-        game.setBoard(chessBoard);
-        game.setTeamTurn(ChessGame.TeamColor.WHITE);
-
-        //move white piece 2 spaces
-        game.makeMove(TestFactory.getNewMove(TestFactory.getNewPosition(2, 7), TestFactory.getNewPosition(4, 7), null));
+        ChessBoard board = loadBoard("""
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | |p| | |
+                | | | | | | | | |
+                | | | | | | |P| |
+                | | | | | | | | |
+                """);
+        ChessMove setupMove = new ChessMove(new ChessPosition(2, 7), new ChessPosition(4, 7), null);
         /*
         | | | | | | | | |
 		| | | | | | | | |
@@ -192,59 +124,36 @@ public class EnPassantTests {
 		| | | | | | | | |
 		| | | | | | | | |
          */
+        ChessMove enPassantMove = new ChessMove(new ChessPosition(4, 6), new ChessPosition(3, 7), null);
+        ChessBoard endBoard = loadBoard("""
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | |p| |
+                | | | | | | | | |
+                | | | | | | | | |
+                """);
 
-        //make sure pawn has En Passant move
-        ChessMove enPassantMove =
-                TestFactory.getNewMove(TestFactory.getNewPosition(4, 6), TestFactory.getNewPosition(3, 7), null);
-        Assertions.assertTrue(game.validMoves(position).contains(enPassantMove),
-                "ChessGame validMoves did not contain a valid En Passant move");
-
-        //en passant move works correctly
-        Assertions.assertDoesNotThrow(() -> game.makeMove(enPassantMove));
-        Assertions.assertNull(game.getBoard().getPiece(TestFactory.getNewPosition(4, 6)),
-                "After En Passant move, piece still present at original position");
-        Assertions.assertNull(game.getBoard().getPiece(TestFactory.getNewPosition(4, 7)),
-                "After En Passant move, piece still present at taken pawn position");
-        ChessPiece foundPawn = game.getBoard().getPiece(TestFactory.getNewPosition(3, 7));
-        Assertions.assertNotNull(foundPawn, "After En Passant move, no piece present at final position");
-        Assertions.assertEquals(ChessPiece.PieceType.PAWN, foundPawn.getPieceType(),
-                "Found piece at pawn's position is not a pawn");
-        Assertions.assertEquals(ChessGame.TeamColor.BLACK, foundPawn.getTeamColor(),
-                "Found piece at pawn's position is the wrong team color");
+        assertValidEnPassant(board, ChessGame.TeamColor.WHITE, setupMove, enPassantMove, endBoard);
     }
 
 
     @Test
     @DisplayName("Black En Passant Left")
     public void enPassantBlackLeft() throws InvalidMoveException {
-
-        /*
-        | | | | | | | | |
-		| | | | | | | | |
-		| | | | | | | | |
-		| | | | | | | | |
-		| | | | | | | |p|
-		| | | | | | | | |
-		| | | | | | |P| |
-		| | | | | | | | |
-         */
-
-        //Black pawn
-        ChessPiece pawn = TestFactory.getNewPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
-        ChessPosition position = TestFactory.getNewPosition(4, 8);
-        chessBoard.addPiece(position, pawn);
-
-        //white pawn that will double move
-        chessBoard.addPiece(TestFactory.getNewPosition(2, 7),
-                TestFactory.getNewPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
-
-        //set up game
-        ChessGame game = TestFactory.getNewGame();
-        game.setBoard(chessBoard);
-        game.setTeamTurn(ChessGame.TeamColor.WHITE);
-
-        //move white piece 2 spaces
-        game.makeMove(TestFactory.getNewMove(TestFactory.getNewPosition(2, 7), TestFactory.getNewPosition(4, 7), null));
+        ChessBoard board = loadBoard("""
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | |p|
+                | | | | | | | | |
+                | | | | | | |P| |
+                | | | | | | | | |
+                """);
+        ChessMove setupMove = new ChessMove(new ChessPosition(2, 7), new ChessPosition(4, 7), null);
         /*
         | | | | | | | | |
 		| | | | | | | | |
@@ -255,65 +164,40 @@ public class EnPassantTests {
 		| | | | | | | | |
 		| | | | | | | | |
          */
-
-        //make sure pawn has En Passant move
-        ChessMove enPassantMove =
-                TestFactory.getNewMove(TestFactory.getNewPosition(4, 8), TestFactory.getNewPosition(3, 7), null);
-        Assertions.assertTrue(game.validMoves(position).contains(enPassantMove),
-                "ChessGame validMoves did not contain a valid En Passant move");
-
-        //en passant move works correctly
-        Assertions.assertDoesNotThrow(() -> game.makeMove(enPassantMove));
-        Assertions.assertNull(game.getBoard().getPiece(TestFactory.getNewPosition(4, 8)),
-                "After En Passant move, piece still present at original position");
-        Assertions.assertNull(game.getBoard().getPiece(TestFactory.getNewPosition(4, 7)),
-                "After En Passant move, piece still present at taken pawn position");
-        ChessPiece foundPawn = game.getBoard().getPiece(TestFactory.getNewPosition(3, 7));
-        Assertions.assertNotNull(foundPawn, "After En Passant move, no piece present at final position");
-        Assertions.assertEquals(ChessPiece.PieceType.PAWN, foundPawn.getPieceType(),
-                "Found piece at pawn's position is not a pawn");
-        Assertions.assertEquals(ChessGame.TeamColor.BLACK, foundPawn.getTeamColor(),
-                "Found piece at pawn's position is the wrong team color");
+        ChessMove enPassantMove = new ChessMove(new ChessPosition(4, 8), new ChessPosition(3, 7), null);
+        ChessBoard endBoard = loadBoard("""
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | |p| |
+                | | | | | | | | |
+                | | | | | | | | |
+                """);
+        assertValidEnPassant(board, ChessGame.TeamColor.WHITE, setupMove, enPassantMove, endBoard);
     }
 
 
     @Test
     @DisplayName("Can Only En Passant on Next Turn")
     public void missedEnPassant() throws InvalidMoveException {
-
-        /*
-        | | | | | | | | |
-		| | |p| | | | | |
-		| | | | | | | |P|
-		| |P| | | | | | |
-		| | | | | | | | |
-		| | | | | | | |p|
-		| | | | | | | | |
-		| | | | | | | | |
-         */
-
-        //white pawn on board
-        ChessPiece pawn = TestFactory.getNewPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
-        ChessPosition position = TestFactory.getNewPosition(5, 2);
-        chessBoard.addPiece(position, pawn);
-
-        //black pawn that double moves
-        chessBoard.addPiece(TestFactory.getNewPosition(7, 3),
-                TestFactory.getNewPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
-
-        //extra pawns
-        chessBoard.addPiece(TestFactory.getNewPosition(3, 8),
-                TestFactory.getNewPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
-        chessBoard.addPiece(TestFactory.getNewPosition(6, 8),
-                TestFactory.getNewPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
-
-        //set up game
-        ChessGame game = TestFactory.getNewGame();
-        game.setBoard(chessBoard);
+        ChessBoard board = loadBoard("""
+                | | | | | | | | |
+		        | | |p| | | | | |
+		        | | | | | | | |P|
+		        | |P| | | | | | |
+		        | | | | | | | | |
+		        | | | | | | | |p|
+		        | | | | | | | | |
+		        | | | | | | | | |
+                """);
+        ChessGame game = new ChessGame();
+        game.setBoard(board);
         game.setTeamTurn(ChessGame.TeamColor.BLACK);
 
         //move black piece 2 spaces
-        game.makeMove(TestFactory.getNewMove(TestFactory.getNewPosition(7, 3), TestFactory.getNewPosition(5, 3), null));
+        game.makeMove(new ChessMove(new ChessPosition(7, 3), new ChessPosition(5, 3), null));
         /*
         | | | | | | | | |
 		| | | | | | | | |
@@ -326,8 +210,8 @@ public class EnPassantTests {
          */
 
         //filler moves
-        game.makeMove(TestFactory.getNewMove(TestFactory.getNewPosition(6, 8), TestFactory.getNewPosition(7, 8), null));
-        game.makeMove(TestFactory.getNewMove(TestFactory.getNewPosition(3, 8), TestFactory.getNewPosition(2, 8), null));
+        game.makeMove(new ChessMove(new ChessPosition(6, 8), new ChessPosition(7, 8), null));
+        game.makeMove(new ChessMove(new ChessPosition(3, 8), new ChessPosition(2, 8), null));
         /*
         | | | | | | | | |
 		| | | | | | | |P|
@@ -340,10 +224,28 @@ public class EnPassantTests {
          */
 
         //make sure pawn cannot do En Passant move
-        Assertions.assertFalse(game.validMoves(position).contains(
-                TestFactory.getNewMove(TestFactory.getNewPosition(5, 2),
-                        TestFactory.getNewPosition(6, 3), null)),
+        ChessPosition enPassantPosition = new ChessPosition(5, 2);
+        ChessMove enPassantMove = new ChessMove(enPassantPosition, new ChessPosition(6, 3), null);
+        Assertions.assertFalse(game.validMoves(enPassantPosition).contains(enPassantMove),
                 "ChessGame validMoves contained a En Passant move after the move became invalid");
+    }
+
+    private void assertValidEnPassant(ChessBoard board, ChessGame.TeamColor turn, ChessMove setupMove,
+                                      ChessMove enPassantMove, ChessBoard endBoard) throws InvalidMoveException {
+        ChessGame game = new ChessGame();
+        game.setBoard(board);
+        game.setTeamTurn(turn);
+
+        //setup prior move for en passant
+        game.makeMove(setupMove);
+
+        //make sure pawn has En Passant move
+        Assertions.assertTrue(game.validMoves(enPassantMove.getStartPosition()).contains(enPassantMove),
+                "ChessGame validMoves did not contain a valid En Passant move");
+
+        //en passant move works correctly
+        Assertions.assertDoesNotThrow(() -> game.makeMove(enPassantMove));
+        Assertions.assertEquals(endBoard, game.getBoard());
     }
 
 }

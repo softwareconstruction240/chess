@@ -1,12 +1,14 @@
 package passoff.chess.piece;
 
-import chess.*;
+import chess.ChessMove;
+import chess.ChessPiece;
+import chess.ChessPosition;
 import org.junit.jupiter.api.Test;
-import passoff.TestFactory;
 
 import java.util.HashSet;
 
-import static passoff.TestFactory.*;
+import static passoff.chess.TestUtilities.loadBoard;
+import static passoff.chess.TestUtilities.validateMoves;
 
 public class PawnMoveTests {
 
@@ -22,8 +24,8 @@ public class PawnMoveTests {
                         | | | | | | | | |
                         | | | | | | | | |
                         """,
-                startPosition(4, 4),
-                endPositions(new int[][]{{5, 4}})
+                new ChessPosition(4, 4),
+                new int[][]{{5, 4}}
         );
     }
 
@@ -39,8 +41,8 @@ public class PawnMoveTests {
                         | | | | | | | | |
                         | | | | | | | | |
                         """,
-                startPosition(4, 4),
-                endPositions(new int[][]{{3, 4}})
+                new ChessPosition(4, 4),
+                new int[][]{{3, 4}}
         );
     }
 
@@ -57,8 +59,8 @@ public class PawnMoveTests {
                         | | | | |P| | | |
                         | | | | | | | | |
                         """,
-                startPosition(2, 5),
-                endPositions(new int[][]{{3, 5}, {4, 5}})
+                new ChessPosition(2, 5),
+                new int[][]{{3, 5}, {4, 5}}
         );
     }
 
@@ -74,8 +76,8 @@ public class PawnMoveTests {
                         | | | | | | | | |
                         | | | | | | | | |
                         """,
-                startPosition(7, 3),
-                endPositions(new int[][]{{6, 3}, {5, 3}})
+                new ChessPosition(7, 3),
+                new int[][]{{6, 3}, {5, 3}}
         );
     }
 
@@ -92,8 +94,8 @@ public class PawnMoveTests {
                         | | | | | | | | |
                         | | | | | | | | |
                         """,
-                startPosition(7, 3),
-                endPositions(new int[][]{{8, 3}})
+                new ChessPosition(7, 3),
+                new int[][]{{8, 3}}
         );
     }
 
@@ -110,8 +112,8 @@ public class PawnMoveTests {
                         | | |p| | | | | |
                         | | | | | | | | |
                         """,
-                startPosition(2, 3),
-                endPositions(new int[][]{{1, 3}})
+                new ChessPosition(2, 3),
+                new int[][]{{1, 3}}
         );
     }
 
@@ -128,8 +130,8 @@ public class PawnMoveTests {
                         | |p| | | | | | |
                         |N| | | | | | | |
                         """,
-                startPosition(2, 2),
-                endPositions(new int[][]{{1, 1}, {1, 2}})
+                new ChessPosition(2, 2),
+                new int[][]{{1, 1}, {1, 2}}
         );
     }
 
@@ -146,8 +148,8 @@ public class PawnMoveTests {
                         | | | | | | | | |
                         | | | | | | | | |
                         """,
-                startPosition(4, 4),
-                endPositions(new int[][]{})
+                new ChessPosition(4, 4),
+                new int[][]{}
         );
     }
 
@@ -163,8 +165,8 @@ public class PawnMoveTests {
                         | | | | | | | | |
                         | | | | | | | | |
                         """,
-                startPosition(5, 4),
-                endPositions(new int[][]{})
+                new ChessPosition(5, 4),
+                new int[][]{}
         );
     }
 
@@ -181,8 +183,8 @@ public class PawnMoveTests {
                         | | | | | | |P| |
                         | | | | | | | | |
                         """,
-                startPosition(2, 7),
-                endPositions(new int[][]{{3, 7}})
+                new ChessPosition(2, 7),
+                new int[][]{{3, 7}}
         );
     }
 
@@ -198,8 +200,8 @@ public class PawnMoveTests {
                         | | | | | | | | |
                         | | | | | | | | |
                         """,
-                startPosition(7, 3),
-                endPositions(new int[][]{})
+                new ChessPosition(7, 3),
+                new int[][]{}
         );
     }
 
@@ -216,8 +218,8 @@ public class PawnMoveTests {
                         | | | | | | | | |
                         | | | | | | | | |
                         """,
-                startPosition(4, 4),
-                endPositions(new int[][]{{5, 3}, {5, 4}})
+                new ChessPosition(4, 4),
+                new int[][]{{5, 3}, {5, 4}}
         );
     }
 
@@ -233,24 +235,24 @@ public class PawnMoveTests {
                         | | | | | | | | |
                         | | | | | | | | |
                         """,
-                startPosition(4, 4),
-                endPositions(new int[][]{{3, 5}})
+                new ChessPosition(4, 4),
+                new int[][]{{3, 5}}
         );
     }
 
-    private void validatePromotion(String boardText, ChessPosition startPosition, int[][] endPositions) {
-        var board = TestFactory.loadBoard(boardText);
-        var testPiece = board.getPiece(startPosition);
+    private void validatePromotion(String boardText, ChessPosition startingPosition, int[][] endPositions) {
+        var board = loadBoard(boardText);
+        var testPiece = board.getPiece(startingPosition);
         var validMoves = new HashSet<ChessMove>();
         for (var endPosition : endPositions) {
-            var end = startPosition(endPosition[0], endPosition[1]);
-            validMoves.add(TestFactory.getNewMove(startPosition, end, ChessPiece.PieceType.QUEEN));
-            validMoves.add(TestFactory.getNewMove(startPosition, end, ChessPiece.PieceType.BISHOP));
-            validMoves.add(TestFactory.getNewMove(startPosition, end, ChessPiece.PieceType.ROOK));
-            validMoves.add(TestFactory.getNewMove(startPosition, end, ChessPiece.PieceType.KNIGHT));
+            var end = new ChessPosition(endPosition[0], endPosition[1]);
+            validMoves.add(new ChessMove(startingPosition, end, ChessPiece.PieceType.QUEEN));
+            validMoves.add(new ChessMove(startingPosition, end, ChessPiece.PieceType.BISHOP));
+            validMoves.add(new ChessMove(startingPosition, end, ChessPiece.PieceType.ROOK));
+            validMoves.add(new ChessMove(startingPosition, end, ChessPiece.PieceType.KNIGHT));
         }
 
-        validateMoves(board, testPiece, startPosition, validMoves);
+        validateMoves(board, testPiece, startingPosition, validMoves);
     }
 
 }

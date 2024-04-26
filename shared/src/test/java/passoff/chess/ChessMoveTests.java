@@ -2,6 +2,7 @@ package passoff.chess;
 
 import chess.ChessMove;
 import chess.ChessPiece;
+import chess.ChessPosition;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -10,8 +11,6 @@ import org.junit.jupiter.api.Test;
 import java.util.HashSet;
 import java.util.Set;
 
-import static passoff.TestFactory.getNewMove;
-import static passoff.TestFactory.getNewPosition;
 
 public class ChessMoveTests {
     private ChessMove original;
@@ -21,11 +20,11 @@ public class ChessMoveTests {
     private ChessMove promoteDifferent;
     @BeforeEach
     public void setUp() {
-        original = getNewMove(getNewPosition(2, 6), getNewPosition(1, 5), null);
-        equal = getNewMove(getNewPosition(2, 6), getNewPosition(1, 5), null);
-        startDifferent = getNewMove(getNewPosition(2, 4), getNewPosition(1, 5), null);
-        endDifferent = getNewMove(getNewPosition(2, 6), getNewPosition(5, 3), null);
-        promoteDifferent = getNewMove(getNewPosition(2, 6), getNewPosition(1, 5),
+        original = new ChessMove(new ChessPosition(2, 6), new ChessPosition(1, 5), null);
+        equal = new ChessMove(new ChessPosition(2, 6), new ChessPosition(1, 5), null);
+        startDifferent = new ChessMove(new ChessPosition(2, 4), new ChessPosition(1, 5), null);
+        endDifferent = new ChessMove(new ChessPosition(2, 6), new ChessPosition(5, 3), null);
+        promoteDifferent = new ChessMove(new ChessPosition(2, 6), new ChessPosition(1, 5),
                 ChessPiece.PieceType.QUEEN);
     }
 

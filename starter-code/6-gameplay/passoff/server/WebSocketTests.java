@@ -3,19 +3,18 @@ package passoff.server;
 import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
+import com.google.gson.GsonBuilder;
 import org.junit.jupiter.api.*;
-import passoffTests.TestFactory;
-import passoffTests.obfuscatedTestClasses.TestServerFacade;
-import passoffTests.testClasses.TestException;
-import passoffTests.testClasses.TestModels;
-import passoffTests.testClasses.WebsocketTestingEnvironment;
+import passoff.model.*;
+import passoff.websocket.TestCommand;
+import passoff.websocket.TestMessage;
+import passoff.websocket.WebsocketTestingEnvironment;
 import server.Server;
+import websocket.commands.UserGameCommand;
+import websocket.messages.ServerMessage;
 
 import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -26,17 +25,15 @@ public class WebSocketTests {
     private static TestServerFacade serverFacade;
     private static Server server;
     private static Long waitTime;
-    private TestUser white;
-    private TestUser black;
-    private TestUser observer;
+    private WebsocketUser white;
+    private WebsocketUser black;
+    private WebsocketUser observer;
     private Integer gameID;
-
 
     @AfterAll
     static void stopServer() {
         server.stop();
     }
-
 
     @BeforeAll
     public static void init() throws URISyntaxException {
@@ -47,14 +44,14 @@ public class WebSocketTests {
         serverFacade = new TestServerFacade("localhost", port);
         serverFacade.clear();
 
-        environment = new WebsocketTestingEnvironment("localhost", port, "/connect");
+        GsonBuilder gsonBuilder = TestFactory.getGsonBuilder();
+        environment = new WebsocketTestingEnvironment("localhost", port, "/ws", gsonBuilder);
 
         waitTime = TestFactory.getMessageTime();
     }
 
-
     @BeforeEach
-    public void setup() throws TestException {
+    public void setup() {
         //populate database
         serverFacade.clear();
 
@@ -66,7 +63,6 @@ public class WebSocketTests {
 
         joinGame(gameID, white, ChessGame.TeamColor.WHITE);
         joinGame(gameID, black, ChessGame.TeamColor.BLACK);
-        joinGame(gameID, observer, null);
     }
 
     @AfterEach
@@ -74,652 +70,421 @@ public class WebSocketTests {
         environment.disconnectAll();
     }
 
-
     @Test
     @Order(1)
-    @DisplayName("Normal Join Player")
-    public void joinPlayerGood() {
-        //try join valid reserved spot
-        Map<String, List<TestModels.TestMessage>> messages =
-                joinPlayer(white.user, white.authToken, gameID, ChessGame.TeamColor.WHITE, Set.of(), Set.of());
-
-        //check received message
-        assertLoadGameMessage(messages.get(white.user));
-
-
-        //join other spot on game
-        messages = joinPlayer(black.user, black.authToken, gameID, ChessGame.TeamColor.BLACK,
-                Set.of(white.user), Set.of());
-
-        //check received messages
-        assertLoadGameMessage(messages.get(black.user));
-        assertNotificationMessage(messages.get(white.user));
+    @DisplayName("Normal Connect")
+    public void connectGood() {
+        setupNormalGame();
     }
-
 
     @Test
     @Order(2)
-    @DisplayName("Join Player Wrong Team")
-    public void joinPlayerSteal() {
-        //try join someone else's reserved spot
-        Map<String, List<TestModels.TestMessage>> messages =
-                joinPlayer(white.user, white.authToken, gameID, ChessGame.TeamColor.BLACK, Set.of(), Set.of());
+    @DisplayName("Connect Bad GameID")
+    public void connectBadGameID() {
+        //player connect with an incorrect game id
+        connectToGame(white, gameID + 1, false, Set.of(), Set.of());
 
-        //check received message
-        assertErrorMessage(messages.get(white.user));
+        //observer connect with an incorrect game id
+        connectToGame(observer, gameID + 1, false, Set.of(white), Set.of());
     }
 
+    @Test
+    @Order(2)
+    @DisplayName("Connect Bad AuthToken")
+    public void connectBadAuthToken() {
+        connectToGame(new WebsocketUser(black.username(), "badAuth"), gameID, false, Set.of(), Set.of());
+
+        connectToGame(new WebsocketUser(observer.username(), "badAuth"), gameID, false, Set.of(black), Set.of());
+    }
 
     @Test
     @Order(3)
-    @DisplayName("Join Player Empty Team")
-    public void joinPlayerEmpty() {
-        //This test sends a JOIN_PLAYER message for a game without calling Http join endpoint first
-        //create empty game
-        TestModels.TestCreateRequest createRequest = new TestModels.TestCreateRequest();
-        createRequest.gameName = "testGameEmpty";
-        TestModels.TestCreateResult createResult = serverFacade.createGame(createRequest, white.authToken);
-
-        //join empty game
-        Map<String, List<TestModels.TestMessage>> messages =
-                joinPlayer(white.user, white.authToken, createResult.gameID, ChessGame.TeamColor.WHITE,
-                        Set.of(), Set.of());
-
-        assertErrorMessage(messages.get(white.user));
-    }
-
-
-    @Test
-    @Order(4)
-    @DisplayName("Join Player Bad GameID")
-    public void joinPlayerBadGameID() {
-        Map<String, List<TestModels.TestMessage>> messages =
-                joinPlayer(white.user, white.authToken, gameID + 1, ChessGame.TeamColor.WHITE, Set.of(),
-                        Set.of());
-
-        assertErrorMessage(messages.get(white.user));
-    }
-
-
-    @Test
-    @Order(5)
-    @DisplayName("Join Player Bad AuthToken")
-    public void joinPlayerBadAuthToken() {
-        Map<String, List<TestModels.TestMessage>> messages =
-                joinPlayer(white.user, "badAuth", gameID, ChessGame.TeamColor.WHITE, Set.of(), Set.of());
-
-        assertErrorMessage(messages.get(white.user));
-    }
-
-
-    @Test
-    @Order(6)
-    @DisplayName("Normal Join Observer")
-    public void joinObserverGood() {
-        //have white player watch their own game
-        Map<String, List<TestModels.TestMessage>> messages =
-                joinObserver(white.user, white.authToken, gameID, Set.of(), Set.of());
-
-        //should get a load game message
-        assertLoadGameMessage(messages.get(white.user));
-
-        //have player join
-        messages = joinPlayer(black.user, black.authToken, gameID, ChessGame.TeamColor.BLACK,
-                Set.of(white.user), Set.of());
-
-        //observer should get a notification
-        assertNotificationMessage(messages.get(white.user));
-
-        //watch game
-        messages =
-                joinObserver(observer.user, observer.authToken, gameID, Set.of(white.user, black.user),
-                        Set.of());
-
-        //check messages
-        assertLoadGameMessage(messages.get(observer.user));
-        assertNotificationMessage(messages.get(white.user));
-        assertNotificationMessage(messages.get(black.user));
-    }
-
-
-    @Test
-    @Order(7)
-    @DisplayName("Join Observer Bad GameID")
-    public void joinObserverBadGameID() {
-        Map<String, List<TestModels.TestMessage>> messages =
-                joinObserver(observer.user, observer.authToken, gameID + 1, Set.of(), Set.of());
-
-        assertErrorMessage(messages.get(observer.user));
-    }
-
-
-    @Test
-    @Order(8)
-    @DisplayName("Join Observer Bad AuthToken")
-    public void joinObserverBadAuthToken() {
-        Map<String, List<TestModels.TestMessage>> messages =
-                joinObserver(observer.user, "badAuth", gameID, Set.of(), Set.of());
-
-        assertErrorMessage(messages.get(observer.user));
-    }
-
-
-    @Test
-    @Order(9)
     @DisplayName("Normal Make Move")
     public void validMove() {
         setupNormalGame();
 
         //create pawn move
-        ChessPosition startingPosition = TestFactory.getNewPosition(2, 5);
-        ChessPosition endingPosition = TestFactory.getNewPosition(3, 5);
-        ChessMove move = TestFactory.getNewMove(startingPosition, endingPosition, null);
+        ChessMove move = new ChessMove(new ChessPosition(2, 5), new ChessPosition(3, 5), null);
 
-        //send command
-        Map<String, List<TestModels.TestMessage>> messages =
-                makeMove(white.user, white.authToken, gameID, move,
-                        Set.of(black.user, observer.user), Set.of());
-
-        assertLoadGameMessage(messages.get(white.user));
-        assertMoveMadePair(messages.get(black.user));
-        assertMoveMadePair(messages.get(observer.user));
+        //make a valid move
+        makeMove(white, gameID, move,true, false, Set.of(black, observer), Set.of());
     }
 
+    @Test
+    @Order(4)
+    @DisplayName("Make Move Bad Authtoken")
+    public void makeMoveBadAuthtoken() {
+        setupNormalGame();
+
+        //set up valid move - pawn move two steps forward
+        ChessMove move = new ChessMove(new ChessPosition(2, 6), new ChessPosition(4, 6), null);
+
+        //send command with wrong authtoken
+        makeMove(new WebsocketUser(white.username(), "badAuth"), gameID, move, false, false, Set.of(black, observer), Set.of());
+    }
 
     @Test
-    @Order(10)
+    @Order(4)
     @DisplayName("Make Invalid Move")
     public void invalidMoveBadMove() {
         setupNormalGame();
 
-        //try to move rook - invalid move
-        ChessPosition startingPosition = TestFactory.getNewPosition(1, 1);
-        ChessPosition endingPosition = TestFactory.getNewPosition(1, 5);
-        ChessMove move = TestFactory.getNewMove(startingPosition, endingPosition, null);
-
-        //send command
-        Map<String, List<TestModels.TestMessage>> messages =
-                makeMove(white.user, white.authToken, gameID, move, Set.of(),
-                        Set.of(black.user, observer.user));
-
-        assertErrorMessage(messages.get(white.user));
-        Assertions.assertTrue(messages.get(black.user).isEmpty(),
-                "Player got a message after the other player sent an invalid command");
-        Assertions.assertTrue(messages.get(observer.user).isEmpty(),
-                "Observer got a message after player sent an invalid command");
+        //try to move rook through a pawn - invalid move
+        ChessMove move = new ChessMove(new ChessPosition(1, 1), new ChessPosition(1, 5), null);
+        makeMove(white, gameID, move, false, false, Set.of(black, observer), Set.of());
     }
 
-
     @Test
-    @Order(11)
+    @Order(4)
     @DisplayName("Make Move Wrong Turn")
     public void invalidMoveWrongTurn() {
         setupNormalGame();
 
-        //try to move pawn out of turn
-        ChessPosition startingPosition = TestFactory.getNewPosition(7, 5);
-        ChessPosition endingPosition = TestFactory.getNewPosition(5, 5);
-        ChessMove move = TestFactory.getNewMove(startingPosition, endingPosition, null);
-
-        Map<String, List<TestModels.TestMessage>> messages =
-                makeMove(black.user, black.authToken, gameID, move, Set.of(),
-                        Set.of(white.user, observer.user));
-
-        assertErrorMessage(messages.get(black.user));
-        Assertions.assertTrue(messages.get(white.user).isEmpty(),
-                "Player got a message after the other player sent an invalid command");
-        Assertions.assertTrue(messages.get(observer.user).isEmpty(),
-                "Observer got a message after player sent an invalid command");
+        //try to move pawn out of turn - would be valid if in turn
+        ChessMove move = new ChessMove(new ChessPosition(7, 5), new ChessPosition(5, 5), null);
+        makeMove(black, gameID, move, false, false, Set.of(white, observer), Set.of());
     }
 
-
     @Test
-    @Order(12)
+    @Order(4)
     @DisplayName("Make Move for Opponent")
     public void invalidMoveOpponent() {
         setupNormalGame();
 
-        //try to move pawn of other player
-        ChessPosition startingPosition = TestFactory.getNewPosition(2, 5);
-        ChessPosition endingPosition = TestFactory.getNewPosition(4, 5);
-        ChessMove move = TestFactory.getNewMove(startingPosition, endingPosition, null);
+        //setup valid pawn move
+        ChessMove move = new ChessMove(new ChessPosition(2, 5), new ChessPosition(4, 5), null);
 
-        Map<String, List<TestModels.TestMessage>> messages =
-                makeMove(black.user, black.authToken, gameID, move, Set.of(),
-                        Set.of(white.user, observer.user));
-
-        assertErrorMessage(messages.get(black.user));
-        Assertions.assertTrue(messages.get(white.user).isEmpty(),
-                "Player got a message after the other player sent an invalid command");
-        Assertions.assertTrue(messages.get(observer.user).isEmpty(),
-                "Observer got a message after player sent an invalid command");
+        //attempt to make the move as the other player
+        makeMove(black, gameID, move, false, false, Set.of(white, observer), Set.of());
     }
 
-
     @Test
-    @Order(13)
+    @Order(4)
     @DisplayName("Make Move Observer")
     public void invalidMoveObserver() {
         setupNormalGame();
 
+        //setup valid pawn move
+        ChessMove move = new ChessMove(new ChessPosition(2, 5), new ChessPosition(4, 5), null);
+
         //have observer attempt to make a move
-        ChessPosition startingPosition = TestFactory.getNewPosition(2, 5);
-        ChessPosition endingPosition = TestFactory.getNewPosition(4, 5);
-        ChessMove move = TestFactory.getNewMove(startingPosition, endingPosition, null);
-
-        Map<String, List<TestModels.TestMessage>> messages =
-                makeMove(observer.user, observer.authToken, gameID, move, Set.of(),
-                        Set.of(white.user, black.user));
-
-        assertErrorMessage(messages.get(observer.user));
-        Assertions.assertTrue(messages.get(white.user).isEmpty(),
-                "Player got a message after observer sent an invalid command");
-        Assertions.assertTrue(messages.get(black.user).isEmpty(),
-                "Player got a message after observer sent an invalid command");
+        makeMove(observer, gameID, move, false, false, Set.of(white, black), Set.of());
     }
 
-
     @Test
-    @Order(14)
+    @Order(4)
     @DisplayName("Make Move Game Over")
     public void invalidMoveGameOver() {
         setupNormalGame();
 
-        ChessPosition startingPosition = TestFactory.getNewPosition(2, 7);
-        ChessPosition endingPosition = TestFactory.getNewPosition(4, 7);
-        ChessMove move = TestFactory.getNewMove(startingPosition, endingPosition, null);
-        makeMove(white.user, white.authToken, gameID, move, Set.of(black.user, observer.user),
-                Set.of());
+        //Fools mate setup
+        ChessMove move = new ChessMove(new ChessPosition(2, 7), new ChessPosition(4, 7), null);
+        makeMove(white, gameID, move, true, false, Set.of(black, observer), Set.of());
 
-        startingPosition = TestFactory.getNewPosition(7, 5);
-        endingPosition = TestFactory.getNewPosition(6, 5);
-        move = TestFactory.getNewMove(startingPosition, endingPosition, null);
-        makeMove(black.user, black.authToken, gameID, move, Set.of(white.user, observer.user),
-                Set.of());
+        move = new ChessMove(new ChessPosition(7, 5), new ChessPosition(6, 5), null);
+        makeMove(black, gameID, move, true, false, Set.of(white, observer), Set.of());
 
-        startingPosition = TestFactory.getNewPosition(2, 6);
-        endingPosition = TestFactory.getNewPosition(3, 6);
-        move = TestFactory.getNewMove(startingPosition, endingPosition, null);
-        makeMove(white.user, white.authToken, gameID, move, Set.of(black.user, observer.user),
-                Set.of());
+        move = new ChessMove(new ChessPosition(2, 6), new ChessPosition(3, 6), null);
+        makeMove(white, gameID, move, true, false, Set.of(black, observer), Set.of());
 
-        startingPosition = TestFactory.getNewPosition(8, 4);
-        endingPosition = TestFactory.getNewPosition(4, 8);
-        move = TestFactory.getNewMove(startingPosition, endingPosition, null);
-        makeMove(black.user, black.authToken, gameID, move, Set.of(white.user, observer.user),
-                Set.of());
+        move = new ChessMove(new ChessPosition(8, 4), new ChessPosition(4, 8), null);
+        makeMove(black, gameID, move, true, true, Set.of(white, observer), Set.of());
         //checkmate
 
         //attempt another move
-        startingPosition = TestFactory.getNewPosition(2, 5);
-        endingPosition = TestFactory.getNewPosition(4, 5);
-        move = TestFactory.getNewMove(startingPosition, endingPosition, null);
-        Map<String, List<TestModels.TestMessage>> messages =
-                makeMove(white.user, white.authToken, gameID, move, Set.of(),
-                        Set.of(black.user, observer.user));
-
-
-        assertErrorMessage(messages.get(white.user));
-        Assertions.assertTrue(messages.get(black.user).isEmpty(),
-                "Player got a message after the other player sent an invalid command");
-        Assertions.assertTrue(messages.get(observer.user).isEmpty(),
-                "Observer got a message after player sent an invalid command");
+        move = new ChessMove(new ChessPosition(2, 5), new ChessPosition(4, 5), null);
+        makeMove(white, gameID, move, false, false, Set.of(black, observer), Set.of());
     }
 
-
     @Test
-    @Order(15)
+    @Order(5)
     @DisplayName("Normal Resign")
     public void validResign() {
         setupNormalGame();
 
-        Map<String, List<TestModels.TestMessage>> messages =
-                resign(white.user, white.authToken, gameID, Set.of(black.user, observer.user),
-                        Set.of());
-
-        assertNotificationMessage(messages.get(white.user));
-        assertNotificationMessage(messages.get(black.user));
-        assertNotificationMessage(messages.get(observer.user));
-
+        resign(white, gameID, true, Set.of(black, observer), Set.of());
     }
 
-
     @Test
-    @Order(16)
-    @DisplayName("Move After Resign")
+    @Order(6)
+    @DisplayName("Cannot Move After Resign")
     public void moveAfterResign() {
         setupNormalGame();
 
-        resign(black.user, black.authToken, gameID, Set.of(white.user, observer.user), Set.of());
+        resign(black, gameID, true, Set.of(white, observer), Set.of());
 
         //attempt to make a move after other player resigns
-        ChessPosition startingPosition = TestFactory.getNewPosition(2, 5);
-        ChessPosition endingPosition = TestFactory.getNewPosition(4, 5);
-        ChessMove move = TestFactory.getNewMove(startingPosition, endingPosition, null);
-        Map<String, List<TestModels.TestMessage>> messages =
-                makeMove(white.user, white.authToken, gameID, move, Set.of(),
-                        Set.of(black.user, observer.user));
-
-
-        assertErrorMessage(messages.get(white.user));
-        Assertions.assertTrue(messages.get(black.user).isEmpty(),
-                "Player got a message after the other player sent an invalid command");
-        Assertions.assertTrue(messages.get(observer.user).isEmpty(),
-                "Observer got a message after player sent an invalid command");
+        ChessMove move = new ChessMove(new ChessPosition(2, 5), new ChessPosition(4, 5), null);
+        makeMove(white, gameID, move, false, false, Set.of(black, observer), Set.of());
     }
 
-
     @Test
-    @Order(17)
+    @Order(6)
     @DisplayName("Observer Resign")
     public void invalidResignObserver() {
         setupNormalGame();
 
-        //have observer try to resign
-        Map<String, List<TestModels.TestMessage>> messages = resign(observer.user, observer.authToken, gameID, Set.of(),
-                Set.of(white.user, black.user));
-
-        assertErrorMessage(messages.get(observer.user));
-        Assertions.assertTrue(messages.get(white.user).isEmpty(),
-                "Player got a message after observer sent an invalid command");
-        Assertions.assertTrue(messages.get(black.user).isEmpty(),
-                "Player got a message after observer sent an invalid command");
+        //have observer try to resign - should reject
+        resign(observer, gameID, false, Set.of(white, black), Set.of());
     }
 
-
     @Test
-    @Order(18)
+    @Order(6)
     @DisplayName("Double Resign")
     public void invalidResignGameOver() {
         setupNormalGame();
 
-        resign(black.user, black.authToken, gameID, Set.of(white.user, observer.user), Set.of());
+        //normal resign
+        resign(black, gameID, true, Set.of(white, observer), Set.of());
 
         //attempt to resign after other player resigns
-        Map<String, List<TestModels.TestMessage>> messages =
-                resign(white.user, white.authToken, gameID, Set.of(),
-                        Set.of(black.user, observer.user));
-
-        assertErrorMessage(messages.get(white.user));
-        Assertions.assertTrue(messages.get(black.user).isEmpty(),
-                "Player got a message after the other player sent an invalid command");
-        Assertions.assertTrue(messages.get(observer.user).isEmpty(),
-                "Observer got a message after player sent an invalid command");
+        resign(white, gameID, false, Set.of(black, observer), Set.of());
     }
 
-
     @Test
-    @Order(19)
+    @Order(7)
     @DisplayName("Leave Game")
     public void leaveGame() {
         setupNormalGame();
 
         //have white player leave
-        //all other players get notified, white player can but doesn't have to be
-        Map<String, List<TestModels.TestMessage>> messages =
-                leave(white.user, white.authToken, gameID, Set.of(black.user, observer.user),
-                        Set.of());
+        //all other players get notified, white player should not be
+        leave(white, gameID, Set.of(black, observer), Set.of());
 
-        assertNotificationMessage(messages.get(black.user));
-        assertNotificationMessage(messages.get(observer.user));
-
-
-        //observer leaves
-        messages =
-                leave(observer.user, observer.authToken, gameID, Set.of(black.user), Set.of(white.user));
-
-        assertNotificationMessage(messages.get(black.user));
-        Assertions.assertTrue(messages.get(white.user).isEmpty(), "Player got a message after leaving");
+        //observer leaves - only black player should get a notification
+        leave(observer, gameID, Set.of(black), Set.of(white));
     }
 
+    @Test
+    @Order(8)
+    @DisplayName("Join After Leave Game")
+    public void joinAfterLeaveGame() {
+        setupNormalGame();
+
+        //have white player leave
+        //all other players get notified, white player should not be
+        leave(white, gameID, Set.of(black, observer), Set.of());
+
+        //replace white player with a different player
+        WebsocketUser white2 = registerUser("white2", "WHITE", "white2@chess.com");
+        joinGame(gameID, white2, ChessGame.TeamColor.WHITE);
+        connectToGame(white2, gameID, true, Set.of(black, observer), Set.of(white));
+
+        //new white player can make move
+        ChessMove move = new ChessMove(new ChessPosition(2, 5), new ChessPosition(3, 5), null);
+        makeMove(white2, gameID, move, true, false, Set.of(black, observer), Set.of(white));
+    }
 
     @Test
-    @Order(20)
-    @DisplayName("Multiple Lobbies")
-    public void multipleLobbies() {
-        var white2 = registerUser("white2", "WHITE", "white2@chess.com");
-        var black2 = registerUser("black2", "BLACK", "black2@chess.com");
-        var observer2 = registerUser("observer2", "OBSERVER", "observer2@chess.com");
+    @Order(9)
+    @DisplayName("Multiple Concurrent Games")
+    public void multipleConcurrentGames() {
+        setupNormalGame();
 
-        var otherGameID = createGame(white, "testGame2");
+        //setup parallel game
+        WebsocketUser white2 = registerUser("white2", "WHITE", "white2@chess.com");
+        WebsocketUser black2 = registerUser("black2", "BLACK", "black2@chess.com");
+        WebsocketUser observer2 = registerUser("observer2", "OBSERVER", "observer2@chess.com");
+
+        int otherGameID = createGame(white, "testGame2");
 
         joinGame(otherGameID, white2, ChessGame.TeamColor.WHITE);
         joinGame(otherGameID, black2, ChessGame.TeamColor.BLACK);
-        joinGame(otherGameID, observer2, null);
 
-        setupNormalGame();
+        //setup second game
+        connectToGame(white2, otherGameID, true, Set.of(), Set.of(white, black, observer));
+        connectToGame(black2, otherGameID, true, Set.of(white2), Set.of(white, black, observer));
+        connectToGame(observer2, otherGameID, true,  Set.of(white2, black2), Set.of(white, black, observer));
 
-        Map<String, List<TestModels.TestMessage>> messages =
-                joinPlayer(white2.user, white2.authToken, otherGameID, ChessGame.TeamColor.WHITE, Set.of(),
-                        Set.of(white.user, black.user, observer.user));
-        assertLoadGameMessage(messages.get(white2.user));
-        Assertions.assertTrue(messages.get(white.user).isEmpty(),
-                "Player got a message after player from another lobby sent a command");
-        Assertions.assertTrue(messages.get(black.user).isEmpty(),
-                "Player got a message after player from another lobby sent a command");
-        Assertions.assertTrue(messages.get(observer.user).isEmpty(),
-                "Observer got a message after player from another lobby sent a command");
+        //make move in first game - only users in first game should be notified
+        ChessMove move = new ChessMove(new ChessPosition(2, 5), new ChessPosition(3, 5), null);
+        makeMove(white, gameID, move, true, false, Set.of(black, observer), Set.of(white2, black2, observer2));
 
-        messages = joinPlayer(black2.user, black2.authToken, otherGameID, ChessGame.TeamColor.BLACK, Set.of(white2.user),
-                Set.of(white.user, black.user, observer.user));
-        assertLoadGameMessage(messages.get(black2.user));
-        assertNotificationMessage(messages.get(white2.user));
-        Assertions.assertTrue(messages.get(white.user).isEmpty(),
-                "Player got a message after player from another lobby sent a command");
-        Assertions.assertTrue(messages.get(black.user).isEmpty(),
-                "Player got a message after player from another lobby sent a command");
-        Assertions.assertTrue(messages.get(observer.user).isEmpty(),
-                "Observer got a message after player from another lobby sent a command");
+        //resign in second game - only users in second game should be notified
+        resign(white2, otherGameID, true, Set.of(black2, observer2), Set.of(white, black, observer));
 
-        messages = joinObserver(observer2.user, observer2.authToken, otherGameID, Set.of(white2.user, black2.user),
-                Set.of(white.user, black.user, observer.user));
-        assertLoadGameMessage(messages.get(observer2.user));
-        assertNotificationMessage(messages.get(white2.user));
-        assertNotificationMessage(messages.get(black2.user));
-        Assertions.assertTrue(messages.get(white.user).isEmpty(),
-                "Player got a message after player from another lobby sent a command");
-        Assertions.assertTrue(messages.get(black.user).isEmpty(),
-                "Player got a message after player from another lobby sent a command");
-        Assertions.assertTrue(messages.get(observer.user).isEmpty(),
-                "Observer got a message after player from another lobby sent a command");
-
-        ChessPosition startingPosition = TestFactory.getNewPosition(2, 5);
-        ChessPosition endingPosition = TestFactory.getNewPosition(3, 5);
-        ChessMove move = TestFactory.getNewMove(startingPosition, endingPosition, null);
-        messages = makeMove(white.user, white.authToken, gameID, move,
-                Set.of(black.user, observer.user), Set.of(white2.user, black2.user, observer2.user));
-        assertLoadGameMessage(messages.get(white.user));
-        assertMoveMadePair(messages.get(black.user));
-        assertMoveMadePair(messages.get(observer.user));
-        Assertions.assertTrue(messages.get(white2.user).isEmpty(),
-                "Player got a message after player from another lobby sent a command");
-        Assertions.assertTrue(messages.get(black2.user).isEmpty(),
-                "Player got a message after player from another lobby sent a command");
-        Assertions.assertTrue(messages.get(observer2.user).isEmpty(),
-                "Observer got a message after player from another lobby sent a command");
-
-        messages = resign(white2.user, white2.authToken, otherGameID, Set.of(black2.user, observer2.user),
-                Set.of(white.user, black.user, observer.user));
-        assertNotificationMessage(messages.get(white2.user));
-        assertNotificationMessage(messages.get(black2.user));
-        assertNotificationMessage(messages.get(observer2.user));
-        Assertions.assertTrue(messages.get(white.user).isEmpty(),
-                "Player got a message after player from another lobby sent a command");
-        Assertions.assertTrue(messages.get(black.user).isEmpty(),
-                "Player got a message after player from another lobby sent a command");
-        Assertions.assertTrue(messages.get(observer.user).isEmpty(),
-                "Observer got a message after player from another lobby sent a command");
-
-        messages = leave(white.user, white.authToken, gameID, Set.of(black.user, observer.user),
-                Set.of(white2.user, black2.user, observer2.user));
-        assertNotificationMessage(messages.get(black.user));
-        assertNotificationMessage(messages.get(observer.user));
-        Assertions.assertTrue(messages.get(white2.user).isEmpty(),
-                "Player got a message after player from another lobby sent a command");
-        Assertions.assertTrue(messages.get(black2.user).isEmpty(),
-                "Player got a message after player from another lobby sent a command");
-        Assertions.assertTrue(messages.get(observer2.user).isEmpty(),
-                "Observer got a message after player from another lobby sent a command");
+        //player leave in first game - only users remaining in first game should be notified
+        leave(white, gameID, Set.of(black, observer), Set.of(white2, black2, observer2));
     }
-
-
-    record TestUser(String user, String authToken) {
-    }
-
-    TestUser registerUser(String name, String password, String email) {
-        TestModels.TestRegisterRequest registerRequest = new TestModels.TestRegisterRequest();
-        TestModels.TestLoginRegisterResult result;
-        registerRequest.username = name;
-        registerRequest.password = password;
-        registerRequest.email = email;
-        result = serverFacade.register(registerRequest);
-        return new TestUser(result.username, result.authToken);
-    }
-
-
-    int createGame(TestUser user, String name) {
-        TestModels.TestCreateRequest createRequest = new TestModels.TestCreateRequest();
-        createRequest.gameName = name;
-        TestModels.TestCreateResult createResult = serverFacade.createGame(createRequest, user.authToken);
-        return createResult.gameID;
-    }
-
-    void joinGame(int gameID, TestUser user, ChessGame.TeamColor color) {
-        TestModels.TestJoinRequest joinRequest = new TestModels.TestJoinRequest();
-        joinRequest.gameID = gameID;
-        joinRequest.playerColor = color;
-        serverFacade.verifyJoinPlayer(joinRequest, user.authToken);
-    }
-
-    private Map<String, List<TestModels.TestMessage>> joinPlayer(String sendingUsername, String sendingAuth, int gameID,
-                                                                 ChessGame.TeamColor playerColor,
-                                                                 Set<String> recipients, Set<String> others) {
-        TestModels.TestCommand joinCommand = new TestModels.TestCommand();
-        joinCommand.commandType = TestModels.TestCommandType.JOIN_PLAYER;
-        joinCommand.authToken = sendingAuth;
-        joinCommand.playerColor = playerColor;
-        joinCommand.gameID = gameID;
-
-        Map<String, Integer> expectedMessages =
-                recipients.stream().collect(Collectors.toMap(Function.identity(), s -> 1));
-        expectedMessages.putAll(others.stream().collect(Collectors.toMap(Function.identity(), s -> 0)));
-        expectedMessages.put(sendingUsername, 1);
-        return environment.exchange(sendingUsername, joinCommand, expectedMessages, waitTime);
-    }
-
-
-    private Map<String, List<TestModels.TestMessage>> joinObserver(String sendingUsername, String sendingAuth,
-                                                                   int gameID, Set<String> recipients,
-                                                                   Set<String> others) {
-        TestModels.TestCommand joinCommand = new TestModels.TestCommand();
-        joinCommand.commandType = TestModels.TestCommandType.JOIN_OBSERVER;
-        joinCommand.authToken = sendingAuth;
-        joinCommand.gameID = gameID;
-
-        Map<String, Integer> expectedMessages =
-                recipients.stream().collect(Collectors.toMap(Function.identity(), s -> 1));
-        expectedMessages.putAll(others.stream().collect(Collectors.toMap(Function.identity(), s -> 0)));
-        expectedMessages.put(sendingUsername, 1);
-        return environment.exchange(sendingUsername, joinCommand, expectedMessages, waitTime);
-    }
-
-
-    private Map<String, List<TestModels.TestMessage>> makeMove(String sendingUsername, String sendingAuth, int gameID,
-                                                               ChessMove move, Set<String> recipients,
-                                                               Set<String> others) {
-        TestModels.TestCommand joinCommand = new TestModels.TestCommand();
-        joinCommand.commandType = TestModels.TestCommandType.MAKE_MOVE;
-        joinCommand.authToken = sendingAuth;
-        joinCommand.move = move;
-        joinCommand.gameID = gameID;
-
-        Map<String, Integer> expectedMessages =
-                recipients.stream().collect(Collectors.toMap(Function.identity(), s -> 2));
-        expectedMessages.putAll(others.stream().collect(Collectors.toMap(Function.identity(), s -> 0)));
-        expectedMessages.put(sendingUsername, 1);
-        return environment.exchange(sendingUsername, joinCommand, expectedMessages, waitTime);
-    }
-
-
-    private Map<String, List<TestModels.TestMessage>> resign(String sendingUsername, String sendingAuth, int gameID,
-                                                             Set<String> recipients, Set<String> others) {
-        TestModels.TestCommand resignation = new TestModels.TestCommand();
-        resignation.commandType = TestModels.TestCommandType.RESIGN;
-        resignation.authToken = sendingAuth;
-        resignation.gameID = gameID;
-
-        Map<String, Integer> expectedMessages =
-                recipients.stream().collect(Collectors.toMap(Function.identity(), s -> 1));
-        expectedMessages.putAll(others.stream().collect(Collectors.toMap(Function.identity(), s -> 0)));
-        expectedMessages.put(sendingUsername, 1);
-        return environment.exchange(sendingUsername, resignation, expectedMessages, waitTime);
-    }
-
-
-    private Map<String, List<TestModels.TestMessage>> leave(String sendingUsername, String sendingAuth, int gameID,
-                                                            Set<String> recipients, Set<String> others) {
-        TestModels.TestCommand resignation = new TestModels.TestCommand();
-        resignation.commandType = TestModels.TestCommandType.LEAVE;
-        resignation.authToken = sendingAuth;
-        resignation.gameID = gameID;
-
-        Map<String, Integer> expectedMessages =
-                recipients.stream().collect(Collectors.toMap(Function.identity(), s -> 1));
-        expectedMessages.putAll(others.stream().collect(Collectors.toMap(Function.identity(), s -> 0)));
-        expectedMessages.put(sendingUsername, 0);
-        return environment.exchange(sendingUsername, resignation, expectedMessages, waitTime);
-    }
-
 
     private void setupNormalGame() {
-        //join WHITE
-        joinPlayer(white.user, white.authToken, gameID, ChessGame.TeamColor.WHITE, Set.of(), Set.of());
+        //connect white player
+        connectToGame(white, gameID, true, Set.of(), Set.of());
 
-        //join BLACK
-        joinPlayer(black.user, black.authToken, gameID, ChessGame.TeamColor.BLACK, Set.of(white.user),
-                Set.of());
+        //connect black player
+        connectToGame(black, gameID, true, Set.of(white), Set.of());
 
-        //observer
-        joinObserver(observer.user, observer.authToken, gameID, Set.of(white.user, black.user),
-                Set.of());
+        //connect observer
+        connectToGame(observer, gameID, true,  Set.of(white, black), Set.of());
     }
 
-
-    private void assertLoadGameMessage(List<TestModels.TestMessage> messages) {
-        Assertions.assertEquals(1, messages.size(), "Expected 1 message, got " + messages.size());
-        Assertions.assertEquals(TestModels.TestServerMessageType.LOAD_GAME, messages.get(0).serverMessageType,
-                "Message was not a LOAD_GAME message");
-        Assertions.assertNotNull(messages.get(0).game, "LOAD_GAME message did not contain a game");
+    private WebsocketUser registerUser(String name, String password, String email) {
+        TestAuthResult authResult = serverFacade.register(new TestUser(name, password, email));
+        Assertions.assertEquals(200, serverFacade.getStatusCode(), "HTTP Status code was not 200 for registering a new user, was %d. Message: %s".formatted(serverFacade.getStatusCode(), authResult.getMessage()));
+        return new WebsocketUser(authResult.getUsername(), authResult.getAuthToken());
     }
 
-
-    private void assertNotificationMessage(List<TestModels.TestMessage> messages) {
-        Assertions.assertEquals(1, messages.size(), "Expected 1 message, got " + messages.size());
-        Assertions.assertEquals(TestModels.TestServerMessageType.NOTIFICATION, messages.get(0).serverMessageType,
-                "Message was not a NOTIFICATION message");
-        Assertions.assertNotNull(messages.get(0).message, "Bobs NOTIFICATION message did not contain a message");
+    private int createGame(WebsocketUser user, String name) {
+        TestCreateResult createResult = serverFacade.createGame(new TestCreateRequest(name), user.authToken());
+        Assertions.assertEquals(200, serverFacade.getStatusCode(), "HTTP Status code was not 200 for creating a new game, was %d. Message: %s".formatted(serverFacade.getStatusCode(), createResult.getMessage()));
+        return createResult.getGameID();
     }
 
-
-    private void assertErrorMessage(List<TestModels.TestMessage> messages) {
-        Assertions.assertEquals(1, messages.size(), "Expected 1 message, got " + messages.size());
-        Assertions.assertEquals(TestModels.TestServerMessageType.ERROR, messages.get(0).serverMessageType,
-                "Message was not an ERROR message");
-        Assertions.assertNull(messages.get(0).game, "ERROR message contained a game");
-        Assertions.assertNotNull(messages.get(0).errorMessage, "ERROR message did not contain an error message");
+    private void joinGame(int gameID, WebsocketUser user, ChessGame.TeamColor color) {
+        TestResult result = serverFacade.joinPlayer(new TestJoinRequest(color, gameID), user.authToken());
+        Assertions.assertEquals(200, serverFacade.getStatusCode(), "HTTP Status code was not 200 for joining a player to a game, was %d. Message: %s".formatted(serverFacade.getStatusCode(), result.getMessage()));
     }
 
+    private void connectToGame(WebsocketUser sender, int gameID, boolean expectSuccess,
+                               Set<WebsocketUser> inGame, Set<WebsocketUser> otherClients) {
+        TestCommand connectCommand = new TestCommand(UserGameCommand.CommandType.CONNECT, sender.authToken(), gameID);
+        var numExpectedMessages = expectedMessages(sender, 1, inGame, (expectSuccess ? 1 : 0), otherClients);
+        var actualMessages = environment.exchange(sender.username(), connectCommand, numExpectedMessages, waitTime);
 
-    private void assertMoveMadePair(List<TestModels.TestMessage> messages) {
-        Assertions.assertEquals(2, messages.size(), "Expected 2 messages, got " + messages.size());
-        boolean isLoadGameFirst = messages.get(0).serverMessageType == TestModels.TestServerMessageType.LOAD_GAME;
-        Assertions.assertEquals(TestModels.TestServerMessageType.LOAD_GAME,
-                messages.get(isLoadGameFirst ? 0 : 1).serverMessageType, "Didn't get load game message");
-        Assertions.assertNotNull(messages.get(isLoadGameFirst ? 0 : 1).game, "LOAD_GAME message didn't contain a game");
-        Assertions.assertEquals(TestModels.TestServerMessageType.NOTIFICATION,
-                messages.get(isLoadGameFirst ? 1 : 0).serverMessageType, "Didn't get notification message");
-        Assertions.assertNotNull(messages.get(isLoadGameFirst ? 1 : 0).message,
-                "NOTIFICATION message didn't contain a message");
+        if(expectSuccess) assertValidCommandMessages(actualMessages, sender, this::assertLoadGameMessage, inGame, this::assertNotificationMessage, otherClients);
+        else assertInvalidCommandMessages(actualMessages, sender, inGame, otherClients);
     }
 
+    private void makeMove(WebsocketUser sender, int gameID, ChessMove move, boolean expectSuccess,
+                          boolean extraNotification, Set<WebsocketUser> inGame, Set<WebsocketUser> otherClients) {
+        TestCommand moveCommand = new TestCommand(sender.authToken(), gameID, move);
+        var numExpectedMessages = expectedMessages(sender, 1, inGame, (expectSuccess ? 2 : 0), otherClients);
+        var actualMessages = environment.exchange(sender.username(), moveCommand, numExpectedMessages, waitTime);
+
+        if(expectSuccess) {
+            if(extraNotification) assertValidCommandMessages(actualMessages, sender, this::assertLoadGameWithExtra, inGame, this::assertMoveMadeWithExtra, otherClients);
+            else assertValidCommandMessages(actualMessages, sender, this::assertLoadGameMessage, inGame, this::assertMoveMadePair, otherClients);
+        }
+        else assertInvalidCommandMessages(actualMessages, sender, inGame, otherClients);
+    }
+
+    private void resign(WebsocketUser sender, int gameID, boolean expectSuccess,
+                               Set<WebsocketUser> inGame, Set<WebsocketUser> otherClients) {
+        TestCommand resignCommand = new TestCommand(UserGameCommand.CommandType.RESIGN, sender.authToken(), gameID);
+        var numExpectedMessages = expectedMessages(sender, 1, inGame, (expectSuccess ? 1 : 0), otherClients);
+        var actualMessages = environment.exchange(sender.username(), resignCommand, numExpectedMessages, waitTime);
+
+        if(expectSuccess) assertValidCommandMessages(actualMessages, sender, this::assertNotificationMessage, inGame, this::assertNotificationMessage, otherClients);
+        else assertInvalidCommandMessages(actualMessages, sender, inGame, otherClients);
+    }
+
+    private void leave(WebsocketUser sender, int gameID, Set<WebsocketUser> inGame, Set<WebsocketUser> otherClients) {
+        TestCommand leaveCommand = new TestCommand(UserGameCommand.CommandType.LEAVE, sender.authToken(), gameID);
+        var numExpectedMessages = expectedMessages(sender, 0, inGame, 1, otherClients);
+        var actualMessages = environment.exchange(sender.username(), leaveCommand, numExpectedMessages, waitTime);
+        assertValidCommandMessages(actualMessages, sender, this::assertNoMessagesLeave, inGame, this::assertNotificationMessage, otherClients);
+    }
+
+    private Map<String, Integer> expectedMessages(WebsocketUser sender, int senderExpected, Set<WebsocketUser> inGame, int inGameExpected, Set<WebsocketUser> otherClients) {
+        Map<String, Integer> expectedMessages = new HashMap<>();
+        expectedMessages.put(sender.username(), senderExpected);
+        expectedMessages.putAll(inGame.stream().collect(Collectors.toMap(WebsocketUser::username, s -> inGameExpected)));
+        expectedMessages.putAll(otherClients.stream().collect(Collectors.toMap(WebsocketUser::username, s -> 0)));
+        return expectedMessages;
+    }
+
+    private void assertValidCommandMessages(Map<String, List<TestMessage>> messages, WebsocketUser user, MessageAsserter userAsserter, Set<WebsocketUser> inGame, MessageAsserter inGameAsserter, Set<WebsocketUser> otherClients) {
+        userAsserter.runAssertions(user.username(), messages.get(user.username()));
+        for(WebsocketUser inGameUser : inGame) inGameAsserter.runAssertions(inGameUser.username(), messages.get(inGameUser.username()));
+        for(WebsocketUser otherUser : otherClients) assertNoMessagesFromOtherGame(otherUser.username(), messages.get(otherUser.username()));
+    }
+
+    private void assertInvalidCommandMessages(Map<String, List<TestMessage>> messages, WebsocketUser user, Set<WebsocketUser> inGame, Set<WebsocketUser> otherClients) {
+        assertErrorMessage(user.username(), messages.get(user.username()));
+        for(WebsocketUser inGameUser : inGame) assertNoMessagesInvalid(inGameUser.username(), messages.get(inGameUser.username()));
+        for(WebsocketUser otherUser : otherClients) assertNoMessagesFromOtherGame(otherUser.username(), messages.get(otherUser.username()));
+    }
+
+    private void assertLoadGame(String username, TestMessage message) {
+        Assertions.assertEquals(ServerMessage.ServerMessageType.LOAD_GAME, message.getServerMessageType(), "Message for %s was not a LOAD_GAME message: %s".formatted(username, message));
+        Assertions.assertNotNull(message.getGame(), "%s's LOAD_GAME message did not contain a game (Make sure it's specifically called 'game')".formatted(username));
+        Assertions.assertNull(message.getMessage(), "%s's LOAD_GAME message contained a message: %s".formatted(username, message.getMessage()));
+        Assertions.assertNull(message.getErrorMessage(), "%s's LOAD_GAME message contained an error message: %s".formatted(username, message.getErrorMessage()));
+    }
+
+    private void assertNotification(String username, TestMessage message) {
+        Assertions.assertEquals(ServerMessage.ServerMessageType.NOTIFICATION, message.getServerMessageType(), "Message for %s was not a NOTIFICATION message: %s".formatted(username, message));
+        Assertions.assertNotNull(message.getMessage(), "%s's NOTIFICATION message did not contain a message (Make sure it's specifically called 'message')".formatted(username));
+        Assertions.assertNull(message.getGame(), "%s's NOTIFICATION message contained a game: %s".formatted(username, message.getGame()));
+        Assertions.assertNull(message.getErrorMessage(), "%s's NOTIFICATION message contained an error message: %s".formatted(username, message.getErrorMessage()));
+    }
+
+    private void assertError(String username, TestMessage message) {
+        Assertions.assertEquals(ServerMessage.ServerMessageType.ERROR, message.getServerMessageType(), "Message for %s was not an ERROR message: %s".formatted(username, message));
+        Assertions.assertNotNull(message.getErrorMessage(), "%s's ERROR message did not contain an error message (Make sure it's specifically called 'errorMessage')".formatted(username));
+        Assertions.assertNull(message.getGame(), "%s's ERROR message contained a game: %s".formatted(username, message.getGame()));
+        Assertions.assertNull(message.getMessage(), "%s's ERROR message contained a non-error message: %s".formatted(username, message.getMessage()));
+    }
+
+    private void assertLoadGameMessage(String username, List<TestMessage> messages) {
+        Assertions.assertEquals(1, messages.size(), "Expected 1 message for %s, got %s: %s".formatted(username, messages.size(), messages));
+        assertLoadGame(username, messages.get(0));
+    }
+
+    private void assertNotificationMessage(String username, List<TestMessage> messages) {
+        Assertions.assertEquals(1, messages.size(), "Expected 1 message for %s, got %s: %s".formatted(username, messages.size(), messages));
+        assertNotification(username, messages.get(0));
+    }
+
+    private void assertErrorMessage(String username, List<TestMessage> messages) {
+        Assertions.assertEquals(1, messages.size(), "Expected 1 message for %s, got %s: %s".formatted(username, messages.size(), messages));
+        assertError(username, messages.get(0));
+    }
+
+    private void assertMoveMadePair(String username, List<TestMessage> messages) {
+        Assertions.assertEquals(2, messages.size(), "Expected 2 messages for %s, got %s".formatted(username, messages.size()));
+        messages.sort(Comparator.comparing(TestMessage::getServerMessageType));
+        try {
+            assertLoadGame(username, messages.get(0));
+            assertNotification(username, messages.get(1));
+        } catch(AssertionError e) {
+            Assertions.fail("Expected a LOAD_GAME and a NOTIFICATION for %s, got %s".formatted(username, messages.reversed()), e);
+        }
+    }
+
+    private void assertMoveMadeWithExtra(String username, List<TestMessage> messages) {
+        Assertions.assertTrue(messages.size() == 2 || messages.size() == 3, "Expected 2 or 3 messages, got " + messages.size());
+        messages.sort(Comparator.comparing(TestMessage::getServerMessageType));
+        try {
+            assertLoadGame(username, messages.get(0));
+            assertNotification(username, messages.get(1));
+            if (messages.size() == 3) assertNotification(username, messages.get(2));
+        } catch(AssertionError e) {
+            Assertions.fail("Expected a LOAD_GAME and 1 or 2 NOTIFICATION's for %s, got %s".formatted(username, messages.reversed()), e);
+        }
+    }
+
+    private void assertLoadGameWithExtra(String username, List<TestMessage> messages) {
+        Assertions.assertTrue(messages.size() == 1 || messages.size() == 2, "Expected 1 or 2 messages, got " + messages.size());
+        messages.sort(Comparator.comparing(TestMessage::getServerMessageType));
+        try {
+            assertLoadGame(username, messages.get(0));
+            if (messages.size() == 2) assertNotification(username, messages.get(1));
+        } catch(AssertionError e) {
+            Assertions.fail("Expected a LOAD_GAME and an optional NOTIFICATION for %s, got %s".formatted(username, messages.reversed()), e);
+        }
+    }
+
+    private void assertNoMessages(String username, List<TestMessage> messages, String description) {
+            Assertions.assertTrue(messages.isEmpty(), "%s got a message after %s. messages: %s".formatted(username, description, messages));
+    }
+
+    private void assertNoMessagesInvalid(String username, List<TestMessage> messages) {
+        assertNoMessages(username, messages, "another user sent an invalid command");
+    }
+
+    private void assertNoMessagesLeave(String username, List<TestMessage> messages) {
+        assertNoMessages(username, messages, "leaving a game");
+    }
+
+    private void assertNoMessagesFromOtherGame(String username, List<TestMessage> messages) {
+        assertNoMessages(username, messages, "a user from a different game or a game this user previously left sent a command");
+    }
+
+    @FunctionalInterface
+    private static interface MessageAsserter {
+        void runAssertions(String username, List<TestMessage> messages);
+    }
+
+    private static record WebsocketUser(String username, String authToken) { }
 }
