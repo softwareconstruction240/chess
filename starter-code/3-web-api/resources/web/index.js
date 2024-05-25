@@ -14,7 +14,7 @@ function submit() {
 
 function send(path, params, method, authToken) {
   params = !!params ? params : undefined;
-  let errStr = '';
+  let status = '';
   fetch(path, {
     method: method,
     body: params,
@@ -24,12 +24,18 @@ function send(path, params, method, authToken) {
     },
   })
     .then((response) => {
-      if (!response.ok) errStr = response.status + ': ' + response.statusText + '\n';
-      return response.json();
+      status = response.status + ': ' + response.statusText + '\n';
+      return response.text();
+    })
+    .then((text) => {
+      if(text) return JSON.parse(text);
+      else return text;
     })
     .then((data) => {
-      document.getElementById('authToken').value = data.authToken || authToken || 'none';
-      document.getElementById('response').innerText = errStr + JSON.stringify(data, null, 2);
+      document.getElementById('authToken').value = (data && data.authToken) || authToken || '';
+      const response = (data === "") ? "Empty response body" : JSON.stringify(data, null, 2);
+      document.getElementById('response').innerText = status + "\n" + response;
+      scrollToId('responseBox');
     })
     .catch((error) => {
       document.getElementById('response').innerText = error;
@@ -41,8 +47,12 @@ function displayRequest(method, endpoint, request) {
   document.getElementById('handleBox').value = endpoint;
   const body = request ? JSON.stringify(request, null, 2) : '';
   document.getElementById('requestBox').value = body;
+  scrollToId('execute');
+}
+
+function scrollToId(id) {
   window.scrollBy({
-    top: document.getElementById('execute').getBoundingClientRect().top,
+    top: document.getElementById(id).getBoundingClientRect().top,
     behavior:"smooth"
   });
 }
@@ -66,5 +76,5 @@ function createGame() {
   displayRequest('POST', '/game', { gameName: 'gameName' });
 }
 function joinGame() {
-  displayRequest('PUT', '/game', { playerColor: 'WHITE/BLACK/empty', gameID: 0 });
+  displayRequest('PUT', '/game', { playerColor: 'WHITE/BLACK', gameID: 0 });
 }

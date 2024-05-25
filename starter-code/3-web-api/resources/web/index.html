@@ -82,8 +82,8 @@
             <div class="path">/game</div>
         </td>
         <td>
-            <span class="description">Join a Chess Game</span> The request body must contain the game ID. If no color is
-            specified then the user is joined as an observer. An authToken is required to call this endpoint.
+            <span class="description">Join a Chess Game</span> The request body must contain the game ID and player
+            color. An authToken is required to call this endpoint.
         </td>
     </tr>
     <tr>
@@ -116,7 +116,7 @@
 
     <button onclick="submit()">Send</button>
 </div>
-<div class="box">
+<div id="responseBox" class="box">
     <h3>Response</h3>
     <pre id="response" readonly></pre>
 </div>
