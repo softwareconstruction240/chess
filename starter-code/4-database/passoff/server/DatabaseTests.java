@@ -147,7 +147,9 @@ public class DatabaseTests {
     }
 
     private Class<?> findDatabaseManager() throws ClassNotFoundException {
-        if(databaseManagerClass != null) return databaseManagerClass;
+        if(databaseManagerClass != null) {
+            return databaseManagerClass;
+        }
 
         for (Package p : getClass().getClassLoader().getDefinedPackages()) {
             try {
