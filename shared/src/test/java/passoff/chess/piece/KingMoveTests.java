@@ -8,7 +8,7 @@ import static passoff.chess.TestUtilities.validateMoves;
 public class KingMoveTests {
 
     @Test
-    public void kingMoveUntilEdge() {
+    public void kingMiddleOfBoard() {
         validateMoves("""
                         | | | | | | | | |
                         | | | | | | | | |
