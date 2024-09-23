@@ -27,25 +27,6 @@ public class KnightMoveTests {
     }
 
     @Test
-    public void knightSurrounded() {
-        validateMoves("""
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | | |R|R|R| | |
-                        | | | |R|N|R| | |
-                        | | | |R|R|R| | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        | | | | | | | | |
-                        """,
-                new ChessPosition(5, 5),
-                new int[][]{
-                        {7, 6}, {6, 7}, {4, 7}, {3, 6}, {3, 4}, {4, 3}, {6, 3}, {7, 4},
-                }
-        );
-    }
-
-    @Test
     public void knightMiddleOfBoardBlack() {
         validateMoves("""
                         | | | | | | | | |
@@ -202,6 +183,24 @@ public class KnightMoveTests {
         );
     }
 
+    @Test
+    public void knightSurroundedButNotBlocked() {
+        validateMoves("""
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | |R|R|R| | |
+                        | | | |R|N|R| | |
+                        | | | |R|R|R| | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        """,
+                new ChessPosition(5, 5),
+                new int[][]{
+                        {7, 6}, {6, 7}, {4, 7}, {3, 6}, {3, 4}, {4, 3}, {6, 3}, {7, 4},
+                }
+        );
+    }
 
     @Test
     public void knightBlocked() {
