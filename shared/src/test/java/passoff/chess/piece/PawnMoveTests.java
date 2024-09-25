@@ -3,6 +3,7 @@ package passoff.chess.piece;
 import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
+
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
@@ -239,6 +240,177 @@ public class PawnMoveTests {
                 new int[][]{{3, 5}}
         );
     }
+
+    @Test
+    public void pawnMoveFromEdgeWhite() {
+        validateMoves("""
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | |P|
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        """,
+                new ChessPosition(4, 8),
+                new int[][]{{5, 8}}
+        );
+    }
+
+    @Test
+    public void pawnMoveFromEdgeBlack() {
+        validateMoves("""
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | |p|
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        """,
+                new ChessPosition(5, 8),
+                new int[][]{{4, 8}}
+        );
+    }
+
+    @Test
+    public void pawnCaptureFromEdgeWhite() {
+        validateMoves("""
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | |r| |
+                        | | | | | | | |P|
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        """,
+                new ChessPosition(4, 8),
+                new int[][]{{5, 8}, {5, 7}}
+        );
+    }
+
+    @Test
+    public void pawnCaptureFromEdgeBlack() {
+        validateMoves("""
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | |p|
+                        | | | | | | |R| |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        """,
+                new ChessPosition(5, 8),
+                new int[][]{{4, 8}, {4, 7}}
+        );
+    }
+
+    @Test
+    public void pawnCaptureFromStartWhite() {
+        validateMoves("""
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | |r| | | | | |
+                        | | |r| | | | | |
+                        | | | |P| | | | |
+                        | | | | | | | | |
+                        """,
+                new ChessPosition(2, 4),
+                new int[][]{{3, 3}, {3, 4}, {4, 4}}
+        );
+    }
+
+    @Test
+    public void pawnCaptureFromStartBlack() {
+        validateMoves("""
+                        | | | | | | | | |
+                        | | | |p| | | | |
+                        | | |R| | | | | |
+                        | | |R| | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        """,
+                new ChessPosition(7, 4),
+                new int[][]{{6, 4}, {5, 4}, {6, 3}}
+        );
+    }
+
+    @Test
+    public void captureAndPromoteWhite() {
+        validatePromotion("""
+                        | | |r| | | | | |
+                        | | | |P| | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        """,
+                new ChessPosition(7, 4),
+                new int[][]{{8, 3}, {8, 4}}
+        );
+    }
+
+    @Test
+    public void captureAndPromoteBlack() {
+        validatePromotion("""
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | |p| | | | |
+                        | | |R| | | | | |
+                        """,
+                new ChessPosition(2, 4),
+                new int[][]{{1, 3}, {1, 4}}
+        );
+    }
+
+    @Test
+    public void pawnCannotCaptureBackwardWhite() {
+        validateMoves("""
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | |P| | | | | |
+                        | | |r|r| | | | |
+                        | | | | | | | | |
+                        """,
+                new ChessPosition(3, 3),
+                new int[][]{{4, 3}}
+        );
+    }
+
+    @Test
+    public void pawnCannotCaptureBackwardBlack() {
+        validateMoves("""
+                        | | | | | | | | |
+                        | | |R|R| | | | |
+                        | | |p| | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        """,
+                new ChessPosition(6, 3),
+                new int[][]{{5, 3}}
+        );
+    }
+
 
     private void validatePromotion(String boardText, ChessPosition startingPosition, int[][] endPositions) {
         var board = loadBoard(boardText);
