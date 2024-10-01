@@ -237,7 +237,7 @@ public class CastlingTests {
         //move rook back to starting spot
         game.makeMove(new ChessMove(new ChessPosition(1, 4), new ChessPosition(1, 1), null));
         /*
-        | | | | | | | | |
+		| | | | | | | | |
 		| | | | | | | | |
 		|p| | | | | | | |
 		| | | | | | | | |
@@ -261,7 +261,7 @@ public class CastlingTests {
         game.makeMove(new ChessMove(new ChessPosition(6, 1), new ChessPosition(5, 1), null));
         game.makeMove(new ChessMove(kingPosition, new ChessPosition(1, 6), null));
         /*
-        | | | | | | | | |
+		| | | | | | | | |
 		| | | | | | | | |
 		| | | | | | | | |
 		|p| | | | | | | |
@@ -275,7 +275,7 @@ public class CastlingTests {
         game.makeMove(new ChessMove(new ChessPosition(5, 1), new ChessPosition(4, 1), null));
         game.makeMove(new ChessMove(new ChessPosition(1, 6), kingPosition, null));
         /*
-        | | | | | | | | |
+		| | | | | | | | |
 		| | | | | | | | |
 		| | | | | | | | |
 		| | | | | | | | |
