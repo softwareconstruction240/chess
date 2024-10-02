@@ -33,14 +33,14 @@ public class EnPassantTests {
                 """);
         ChessMove setupMove = new ChessMove(new ChessPosition(7, 3), new ChessPosition(5, 3), null);
         /*
-        | | | | | | | | |
-		| | | | | | | | |
-		| | | | | | | | |
-		| |P|p| | | | | |
-		| | | | | | | | |
-		| | | | | | | | |
-		| | | | | | | | |
-		| | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | |P|p| | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
          */
 
         ChessMove enPassantMove = new ChessMove(new ChessPosition(5, 2), new ChessPosition(6, 3), null);
@@ -75,14 +75,14 @@ public class EnPassantTests {
 
         ChessMove setupMove = new ChessMove(new ChessPosition(7, 3), new ChessPosition(5, 3), null);
         /*
-        | | | | | | | | |
-		| | | | | | | | |
-		| | | | | | | | |
-		| | |p|P| | | | |
-		| | | | | | | | |
-		| | | | | | | | |
-		| | | | | | | | |
-		| | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | |p|P| | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
          */
         ChessMove enPassantMove = new ChessMove(new ChessPosition(5, 4), new ChessPosition(6, 3), null);
         ChessBoard endBoard = loadBoard("""
@@ -115,14 +115,14 @@ public class EnPassantTests {
                 """);
         ChessMove setupMove = new ChessMove(new ChessPosition(2, 7), new ChessPosition(4, 7), null);
         /*
-        | | | | | | | | |
-		| | | | | | | | |
-		| | | | | | | | |
-		| | | | | | | | |
-		| | | | | |p|P| |
-		| | | | | | | | |
-		| | | | | | | | |
-		| | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | |p|P| |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
          */
         ChessMove enPassantMove = new ChessMove(new ChessPosition(4, 6), new ChessPosition(3, 7), null);
         ChessBoard endBoard = loadBoard("""
@@ -155,14 +155,14 @@ public class EnPassantTests {
                 """);
         ChessMove setupMove = new ChessMove(new ChessPosition(2, 7), new ChessPosition(4, 7), null);
         /*
-        | | | | | | | | |
-		| | | | | | | | |
-		| | | | | | | | |
-		| | | | | | | | |
-		| | | | | | |P|p|
-		| | | | | | | | |
-		| | | | | | | | |
-		| | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | |P|p|
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
          */
         ChessMove enPassantMove = new ChessMove(new ChessPosition(4, 8), new ChessPosition(3, 7), null);
         ChessBoard endBoard = loadBoard("""
@@ -184,13 +184,13 @@ public class EnPassantTests {
     public void missedEnPassant() throws InvalidMoveException {
         ChessBoard board = loadBoard("""
                 | | | | | | | | |
-		        | | |p| | | | | |
-		        | | | | | | | |P|
-		        | |P| | | | | | |
-		        | | | | | | | | |
-		        | | | | | | | |p|
-		        | | | | | | | | |
-		        | | | | | | | | |
+                | | |p| | | | | |
+                | | | | | | | |P|
+                | |P| | | | | | |
+                | | | | | | | | |
+                | | | | | | | |p|
+                | | | | | | | | |
+                | | | | | | | | |
                 """);
         ChessGame game = new ChessGame();
         game.setBoard(board);
@@ -199,28 +199,28 @@ public class EnPassantTests {
         //move black piece 2 spaces
         game.makeMove(new ChessMove(new ChessPosition(7, 3), new ChessPosition(5, 3), null));
         /*
-        | | | | | | | | |
-		| | | | | | | | |
-		| | | | | | | |P|
-		| |P|p| | | | | |
-		| | | | | | | | |
-		| | | | | | | |p|
-		| | | | | | | | |
-		| | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | |P|
+                | |P|p| | | | | |
+                | | | | | | | | |
+                | | | | | | | |p|
+                | | | | | | | | |
+                | | | | | | | | |
          */
 
         //filler moves
         game.makeMove(new ChessMove(new ChessPosition(6, 8), new ChessPosition(7, 8), null));
         game.makeMove(new ChessMove(new ChessPosition(3, 8), new ChessPosition(2, 8), null));
         /*
-        | | | | | | | | |
-		| | | | | | | |P|
-		| | | | | | | | |
-		| |P|p| | | | | |
-		| | | | | | | | |
-		| | | | | | | | |
-		| | | | | | | |p|
-		| | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | |P|
+                | | | | | | | | |
+                | |P|p| | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | |p|
+                | | | | | | | | |
          */
 
         //make sure pawn cannot do En Passant move
