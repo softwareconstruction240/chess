@@ -1,10 +1,14 @@
 package passoff.chess.game;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import chess.ChessPosition;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import static passoff.chess.TestUtilities.*;
 
@@ -147,5 +151,13 @@ public class ValidMovesTests {
                 {1, 5}, {1, 6}, {1, 7}, {2, 5}, {2, 7},
         });
         assertMoves(game, validMoves, position);
+    }
+
+    public static void assertMoves(ChessGame game, Set<ChessMove> validMoves, ChessPosition position) {
+        var generatedMoves = game.validMoves(position);
+        var actualMoves = new HashSet<>(generatedMoves);
+        Assertions.assertEquals(generatedMoves.size(), actualMoves.size(), "Duplicate move");
+        Assertions.assertEquals(validMoves, actualMoves,
+                "ChessGame validMoves did not return the correct moves");
     }
 }
