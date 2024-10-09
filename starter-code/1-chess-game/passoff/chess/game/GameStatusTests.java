@@ -224,4 +224,26 @@ public class GameStatusTests {
         Assertions.assertFalse(game.isInStalemate(ChessGame.TeamColor.BLACK),
                 "Black is not in a stalemate but isInStalemate returned true");
     }
+
+    @Test
+    @DisplayName("Stalemate Requires not in Check")
+    public void checkmateNotStalemate() {
+        var game = new ChessGame();
+        game.setBoard(loadBoard("""
+                |k| | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | |P| | | |
+                | | | | | | | |r|
+                |K| | | | | |r| |
+                """));
+        game.setTeamTurn(ChessGame.TeamColor.WHITE);
+
+        Assertions.assertFalse(game.isInStalemate(ChessGame.TeamColor.WHITE),
+                "White is not in a stalemate but isInStalemate returned true");
+        Assertions.assertFalse(game.isInStalemate(ChessGame.TeamColor.BLACK),
+                "Black is not in a stalemate but isInStalemate returned true");
+    }
 }
