@@ -61,6 +61,19 @@ public class TestUtilities {
         return board;
     }
 
+    public static ChessBoard defaultBoard() {
+        return loadBoard("""
+                |r|n|b|q|k|b|n|r|
+                |p|p|p|p|p|p|p|p|
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                |P|P|P|P|P|P|P|P|
+                |R|N|B|Q|K|B|N|R|
+                """);
+    }
+
     public static Set<ChessMove> loadMoves(ChessPosition startPosition, int[][] endPositions) {
         var validMoves = new HashSet<ChessMove>();
         for (var endPosition : endPositions) {
@@ -68,13 +81,5 @@ public class TestUtilities {
                     new ChessPosition(endPosition[0], endPosition[1]), null));
         }
         return validMoves;
-    }
-
-    public static void assertMoves(ChessGame game, Set<ChessMove> validMoves, ChessPosition position) {
-        var generatedMoves = game.validMoves(position);
-        var actualMoves = new HashSet<>(generatedMoves);
-        Assertions.assertEquals(generatedMoves.size(), actualMoves.size(), "Duplicate move");
-        Assertions.assertEquals(validMoves, actualMoves,
-                "ChessGame validMoves did not return the correct moves");
     }
 }

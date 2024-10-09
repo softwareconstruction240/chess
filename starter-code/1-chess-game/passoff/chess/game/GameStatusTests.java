@@ -1,34 +1,29 @@
 package passoff.chess.game;
 
-import chess.*;
-import org.junit.jupiter.api.*;
+import chess.ChessGame;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
-import static passoff.chess.TestUtilities.loadBoard;
+import static passoff.chess.TestUtilities.*;
 
 public class GameStatusTests {
 
     @Test
-    @DisplayName("New Game sets up default values")
+    @DisplayName("New Game Default Values")
     public void newGame() {
         var game = new ChessGame();
-        var expectedBoard = loadBoard("""
-                |r|n|b|q|k|b|n|r|
-                |p|p|p|p|p|p|p|p|
-                | | | | | | | | |
-                | | | | | | | | |
-                | | | | | | | | |
-                | | | | | | | | |
-                |P|P|P|P|P|P|P|P|
-                |R|N|B|Q|K|B|N|R|
-                """);
+        var expectedBoard = defaultBoard();
         Assertions.assertEquals(expectedBoard, game.getBoard());
         Assertions.assertEquals(ChessGame.TeamColor.WHITE, game.getTeamTurn());
     }
 
     @Test
-    @DisplayName("New Game No Statuses")
+    @DisplayName("Default Board No Statuses")
     public void noGameStatuses() {
         var game = new ChessGame();
+        game.setBoard(defaultBoard());
+        game.setTeamTurn(ChessGame.TeamColor.WHITE);
 
         Assertions.assertFalse(game.isInCheck(ChessGame.TeamColor.BLACK),
                 "Black is not in check but isInCheck returned true");
@@ -226,6 +221,28 @@ public class GameStatusTests {
 
         Assertions.assertTrue(game.isInStalemate(ChessGame.TeamColor.WHITE),
                 "White is in a stalemate but isInStalemate returned false");
+        Assertions.assertFalse(game.isInStalemate(ChessGame.TeamColor.BLACK),
+                "Black is not in a stalemate but isInStalemate returned true");
+    }
+
+    @Test
+    @DisplayName("Stalemate Requires not in Check")
+    public void checkmateNotStalemate() {
+        var game = new ChessGame();
+        game.setBoard(loadBoard("""
+                |k| | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | |P| | | |
+                | | | | | | | |r|
+                |K| | | | | |r| |
+                """));
+        game.setTeamTurn(ChessGame.TeamColor.WHITE);
+
+        Assertions.assertFalse(game.isInStalemate(ChessGame.TeamColor.WHITE),
+                "White is not in a stalemate but isInStalemate returned true");
         Assertions.assertFalse(game.isInStalemate(ChessGame.TeamColor.BLACK),
                 "Black is not in a stalemate but isInStalemate returned true");
     }

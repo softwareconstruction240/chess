@@ -1,10 +1,14 @@
 package passoff.chess.game;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import chess.ChessPosition;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import static passoff.chess.TestUtilities.*;
 
@@ -14,6 +18,7 @@ public class ValidMovesTests {
     public void forcedMove() {
 
         var game = new ChessGame();
+        game.setTeamTurn(ChessGame.TeamColor.BLACK);
         game.setBoard(loadBoard("""
                     | | | | | | | | |
                     | | | | | | | | |
@@ -46,7 +51,7 @@ public class ValidMovesTests {
                     | | | | | | | | |
                     | | | | | | | | |
                     | | | | | | | | |
-                    | |r| | | |R| |K|
+                    |k|r| | | |R| |K|
                     | | | | | | | | |
                     | | | | | | | | |
                     | | | | | | | | |
@@ -67,7 +72,7 @@ public class ValidMovesTests {
 
         var game = new ChessGame();
         game.setBoard(loadBoard("""
-                    | | | | | | | |Q|
+                    |K| | | | | | |Q|
                     | | | | | | | | |
                     | | | | | | | | |
                     | | | | | | | | |
@@ -88,11 +93,12 @@ public class ValidMovesTests {
     public void kingInDanger() {
 
         var game = new ChessGame();
+        game.setTeamTurn(ChessGame.TeamColor.BLACK);
         game.setBoard(loadBoard("""
                     |R| | | | | | | |
                     | | | |k| | | |b|
                     | | | | |P| | | |
-                    | | |Q|n| | | | |
+                    |K| |Q|n| | | | |
                     | | | | | | | | |
                     | | | | | | | |r|
                     | | | | | |p| | |
@@ -147,5 +153,27 @@ public class ValidMovesTests {
                 {1, 5}, {1, 6}, {1, 7}, {2, 5}, {2, 7},
         });
         assertMoves(game, validMoves, position);
+    }
+
+    @Test
+    @DisplayName("Valid Moves Independent of Team Turn")
+    public void validMovesOtherTeam() {
+        var game = new ChessGame();
+        game.setBoard(defaultBoard());
+        game.setTeamTurn(ChessGame.TeamColor.BLACK);
+
+        ChessPosition position = new ChessPosition(2, 5);
+        var validMoves = loadMoves(position, new int[][]{
+                {3, 5}, {4, 5}
+        });
+        assertMoves(game, validMoves, position);
+    }
+
+    public static void assertMoves(ChessGame game, Set<ChessMove> validMoves, ChessPosition position) {
+        var generatedMoves = game.validMoves(position);
+        var actualMoves = new HashSet<>(generatedMoves);
+        Assertions.assertEquals(generatedMoves.size(), actualMoves.size(), "Duplicate move");
+        Assertions.assertEquals(validMoves, actualMoves,
+                "ChessGame validMoves did not return the correct moves");
     }
 }
