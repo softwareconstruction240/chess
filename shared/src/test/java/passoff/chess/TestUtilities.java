@@ -61,6 +61,19 @@ public class TestUtilities {
         return board;
     }
 
+    public static ChessBoard defaultBoard() {
+        return loadBoard("""
+                |r|n|b|q|k|b|n|r|
+                |p|p|p|p|p|p|p|p|
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                |P|P|P|P|P|P|P|P|
+                |R|N|B|Q|K|B|N|R|
+                """);
+    }
+
     public static Set<ChessMove> loadMoves(ChessPosition startPosition, int[][] endPositions) {
         var validMoves = new HashSet<ChessMove>();
         for (var endPosition : endPositions) {

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static passoff.chess.TestUtilities.loadBoard;
+import static passoff.chess.TestUtilities.*;
 
 public class GameStatusTests {
 
@@ -13,16 +13,7 @@ public class GameStatusTests {
     @DisplayName("New Game sets up default values")
     public void newGame() {
         var game = new ChessGame();
-        var expectedBoard = loadBoard("""
-                |r|n|b|q|k|b|n|r|
-                |p|p|p|p|p|p|p|p|
-                | | | | | | | | |
-                | | | | | | | | |
-                | | | | | | | | |
-                | | | | | | | | |
-                |P|P|P|P|P|P|P|P|
-                |R|N|B|Q|K|B|N|R|
-                """);
+        var expectedBoard = defaultBoard();
         Assertions.assertEquals(expectedBoard, game.getBoard());
         Assertions.assertEquals(ChessGame.TeamColor.WHITE, game.getTeamTurn());
     }
