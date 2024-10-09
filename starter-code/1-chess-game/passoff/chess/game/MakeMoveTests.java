@@ -207,6 +207,16 @@ public class MakeMoveTests {
     }
 
     @Test
+    @DisplayName("Make Move Changes Team Turn")
+    public void makeMoveChangesTurn() throws InvalidMoveException {
+        game.makeMove(new ChessMove(new ChessPosition(2, 5), new ChessPosition(4, 5), null));
+        Assertions.assertEquals(ChessGame.TeamColor.BLACK, game.getTeamTurn());
+
+        game.makeMove(new ChessMove(new ChessPosition(7, 5), new ChessPosition(5, 5), null));
+        Assertions.assertEquals(ChessGame.TeamColor.WHITE, game.getTeamTurn());
+    }
+
+    @Test
     @DisplayName("Invalid Make Move Too Far")
     public void invalidMakeMoveTooFar() {
         Assertions.assertThrows(InvalidMoveException.class,
