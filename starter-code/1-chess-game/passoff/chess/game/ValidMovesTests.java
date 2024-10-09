@@ -18,6 +18,7 @@ public class ValidMovesTests {
     public void forcedMove() {
 
         var game = new ChessGame();
+        game.setTeamTurn(ChessGame.TeamColor.BLACK);
         game.setBoard(loadBoard("""
                     | | | | | | | | |
                     | | | | | | | | |
@@ -92,6 +93,7 @@ public class ValidMovesTests {
     public void kingInDanger() {
 
         var game = new ChessGame();
+        game.setTeamTurn(ChessGame.TeamColor.BLACK);
         game.setBoard(loadBoard("""
                     |R| | | | | | | |
                     | | | |k| | | |b|
@@ -149,6 +151,20 @@ public class ValidMovesTests {
         ChessPosition position = new ChessPosition(2, 6);
         var validMoves = loadMoves(position, new int[][]{
                 {1, 5}, {1, 6}, {1, 7}, {2, 5}, {2, 7},
+        });
+        assertMoves(game, validMoves, position);
+    }
+
+    @Test
+    @DisplayName("Valid Moves Independent of Team Turn")
+    public void validMovesOtherTeam() {
+        var game = new ChessGame();
+        game.setBoard(defaultBoard());
+        game.setTeamTurn(ChessGame.TeamColor.BLACK);
+
+        ChessPosition position = new ChessPosition(2, 5);
+        var validMoves = loadMoves(position, new int[][]{
+                {3, 5}, {4, 5}
         });
         assertMoves(game, validMoves, position);
     }
