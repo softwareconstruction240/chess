@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static passoff.chess.TestUtilities.*;
+import static passoff.chess.TestUtilities.loadBoard;
 
 /**
  * Tests if the ChessGame implementation can handle Castling moves
@@ -21,7 +21,7 @@ public class CastlingTests {
     @DisplayName("White Team Castle")
     public void castleWhite() {
         ChessBoard board = loadBoard("""
-                | | | | | | | | |
+                | | | | |k| | | |
                 | | | | | | | | |
                 | | | | | | | | |
                 | | | | | | | | |
@@ -47,7 +47,7 @@ public class CastlingTests {
         //queen side castle works correctly
         Assertions.assertDoesNotThrow(() -> game.makeMove(queenSide));
         Assertions.assertEquals(loadBoard("""
-                | | | | | | | | |
+                | | | | |k| | | |
                 | | | | | | | | |
                 | | | | | | | | |
                 | | | | | | | | |
@@ -59,7 +59,7 @@ public class CastlingTests {
 
         //reset board
         board = loadBoard("""
-                | | | | | | | | |
+                | | | | |k| | | |
                 | | | | | | | | |
                 | | | | | | | | |
                 | | | | | | | | |
@@ -74,7 +74,7 @@ public class CastlingTests {
         //king side castle works correctly
         Assertions.assertDoesNotThrow(() -> game.makeMove(kingSide));
         Assertions.assertEquals(loadBoard("""
-                | | | | | | | | |
+                | | | | |k| | | |
                 | | | | | | | | |
                 | | | | | | | | |
                 | | | | | | | | |
@@ -96,7 +96,7 @@ public class CastlingTests {
                 | | | | | | | | |
                 | | | | | | | | |
                 | | | | | | | | |
-                | | | | | | | | |
+                | | | | |K| | | |
                 |R| | | | | | | |
                 """);
         ChessGame game = new ChessGame();
@@ -122,7 +122,7 @@ public class CastlingTests {
                 | | | | | | | | |
                 | | | | | | | | |
                 | | | | | | | | |
-                | | | | | | | | |
+                | | | | |K| | | |
                 |R| | | | | | | |
                 """), game.getBoard());
 
@@ -135,7 +135,7 @@ public class CastlingTests {
                 | | | | | | | | |
                 | | | | | | | | |
                 | | | | | | | | |
-                | | | | | | | | |
+                | | | | |K| | | |
                 |R| | | | | | | |
                 """);
         game.setBoard(board);
@@ -150,7 +150,7 @@ public class CastlingTests {
                 | | | | | | | | |
                 | | | | | | | | |
                 | | | | | | | | |
-                | | | | | | | | |
+                | | | | |K| | | |
                 |R| | | | | | | |
                 """), game.getBoard());
     }
@@ -160,7 +160,7 @@ public class CastlingTests {
     @DisplayName("Cannot Castle Through Pieces")
     public void castlingBlockedByTeam() {
         ChessBoard board = loadBoard("""
-                | | | | | | | | |
+                | | | | |k| | | |
                 | | | | | | | | |
                 | | | | | | | | |
                 | | | | | | | | |
@@ -217,8 +217,8 @@ public class CastlingTests {
     @DisplayName("Cannot Castle After Moving")
     public void noCastleAfterMove() throws InvalidMoveException {
         ChessBoard board = loadBoard("""
+                | | |k| | | | | |
                 | | | | | | | | |
-                |p| | | | | | | |
                 | | | | | | | | |
                 | | | | | | | | |
                 | | | | | | | | |
@@ -232,19 +232,19 @@ public class CastlingTests {
 
         //move left rook
         game.makeMove(new ChessMove(new ChessPosition(1, 1), new ChessPosition(1, 4), null));
-        game.makeMove(new ChessMove(new ChessPosition(7, 1), new ChessPosition(6, 1), null));
+        game.makeMove(new ChessMove(new ChessPosition(8, 3), new ChessPosition(8, 2), null));
 
         //move rook back to starting spot
         game.makeMove(new ChessMove(new ChessPosition(1, 4), new ChessPosition(1, 1), null));
         /*
-                | | | | | | | | |
-                | | | | | | | | |
-                |p| | | | | | | |
-                | | | | | | | | |
-                | | | | | | | | |
-                | | | | | | | | |
-                | | | | | | | | |
-                |R| | | |K| | |R|
+                | |k| | | | | | |
+		        | | | | | | | | |
+		        | | | | | | | | |
+		        | | | | | | | | |
+		        | | | | | | | | |
+		        | | | | | | | | |
+		        | | | | | | | | |
+		        |R| | | |K| | |R|
          */
 
         ChessPosition kingPosition = new ChessPosition(1, 5);
@@ -258,13 +258,13 @@ public class CastlingTests {
                 "ChessGame validMoves did not contain valid king-side castle move");
 
         //move king
-        game.makeMove(new ChessMove(new ChessPosition(6, 1), new ChessPosition(5, 1), null));
+        game.makeMove(new ChessMove(new ChessPosition(8, 2), new ChessPosition(8, 3), null));
         game.makeMove(new ChessMove(kingPosition, new ChessPosition(1, 6), null));
         /*
+                | | |k| | | | | |
                 | | | | | | | | |
                 | | | | | | | | |
                 | | | | | | | | |
-                |p| | | | | | | |
                 | | | | | | | | |
                 | | | | | | | | |
                 | | | | | | | | |
@@ -272,14 +272,14 @@ public class CastlingTests {
          */
 
         //move king back to starting position
-        game.makeMove(new ChessMove(new ChessPosition(5, 1), new ChessPosition(4, 1), null));
+        game.makeMove(new ChessMove(new ChessPosition(8, 3), new ChessPosition(8, 4), null));
         game.makeMove(new ChessMove(new ChessPosition(1, 6), kingPosition, null));
         /*
+                | | | |k| | | | |
                 | | | | | | | | |
                 | | | | | | | | |
                 | | | | | | | | |
                 | | | | | | | | |
-                |p| | | | | | | |
                 | | | | | | | | |
                 | | | | | | | | |
                 |R| | | |K| | |R|

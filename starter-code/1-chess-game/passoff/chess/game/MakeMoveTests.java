@@ -345,11 +345,11 @@ public class MakeMoveTests {
         game.setBoard(loadBoard("""
                 | | | | | | | | |
                 | | |P| | | | | |
+                | | | | | | |k| |
                 | | | | | | | | |
                 | | | | | | | | |
                 | | | | | | | | |
-                | | | | | | | | |
-                | | | | |p| | | |
+                | |K| | |p| | | |
                 | | | | | |Q| | |
                 """));
         game.setTeamTurn(ChessGame.TeamColor.WHITE);

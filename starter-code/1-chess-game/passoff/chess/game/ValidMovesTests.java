@@ -50,7 +50,7 @@ public class ValidMovesTests {
                     | | | | | | | | |
                     | | | | | | | | |
                     | | | | | | | | |
-                    | |r| | | |R| |K|
+                    |k|r| | | |R| |K|
                     | | | | | | | | |
                     | | | | | | | | |
                     | | | | | | | | |
@@ -71,7 +71,7 @@ public class ValidMovesTests {
 
         var game = new ChessGame();
         game.setBoard(loadBoard("""
-                    | | | | | | | |Q|
+                    |K| | | | | | |Q|
                     | | | | | | | | |
                     | | | | | | | | |
                     | | | | | | | | |
@@ -96,7 +96,7 @@ public class ValidMovesTests {
                     |R| | | | | | | |
                     | | | |k| | | |b|
                     | | | | |P| | | |
-                    | | |Q|n| | | | |
+                    |K| |Q|n| | | | |
                     | | | | | | | | |
                     | | | | | | | |r|
                     | | | | | |p| | |
