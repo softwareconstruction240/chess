@@ -10,7 +10,7 @@ import static passoff.chess.TestUtilities.*;
 public class GameStatusTests {
 
     @Test
-    @DisplayName("New Game sets up default values")
+    @DisplayName("New Game Default Values")
     public void newGame() {
         var game = new ChessGame();
         var expectedBoard = defaultBoard();
@@ -19,9 +19,11 @@ public class GameStatusTests {
     }
 
     @Test
-    @DisplayName("New Game No Statuses")
+    @DisplayName("Default Board No Statuses")
     public void noGameStatuses() {
         var game = new ChessGame();
+        game.setBoard(defaultBoard());
+        game.setTeamTurn(ChessGame.TeamColor.WHITE);
 
         Assertions.assertFalse(game.isInCheck(ChessGame.TeamColor.BLACK),
                 "Black is not in check but isInCheck returned true");
