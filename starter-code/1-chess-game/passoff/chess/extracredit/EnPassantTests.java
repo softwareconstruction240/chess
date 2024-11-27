@@ -4,8 +4,7 @@ import chess.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import static passoff.chess.TestUtilities.loadBoard;
+import passoff.chess.TestUtilities;
 
 /**
  * Tests if the ChessGame implementation can handle En Passant moves
@@ -20,7 +19,7 @@ public class EnPassantTests {
     @Test
     @DisplayName("White En Passant Right")
     public void enPassantWhiteRight() throws InvalidMoveException {
-        ChessBoard board = loadBoard("""
+        ChessBoard board = TestUtilities.loadBoard("""
                 | | | | | | | | |
                 | | |p| | | | | |
                 | | | | | | | | |
@@ -43,7 +42,7 @@ public class EnPassantTests {
          */
 
         ChessMove enPassantMove = new ChessMove(new ChessPosition(5, 2), new ChessPosition(6, 3), null);
-        ChessBoard endBoard = loadBoard("""
+        ChessBoard endBoard = TestUtilities.loadBoard("""
                 | | | | | | | | |
                 | | | | | | | | |
                 | | |P| | | | | |
@@ -61,7 +60,7 @@ public class EnPassantTests {
     @Test
     @DisplayName("White En Passant Left")
     public void enPassantWhiteLeft() throws InvalidMoveException {
-        ChessBoard board = loadBoard("""
+        ChessBoard board = TestUtilities.loadBoard("""
                 | | | | | | | | |
                 | | |p| | | | | |
                 | | | | | | | | |
@@ -84,7 +83,7 @@ public class EnPassantTests {
                 | | | | |K| | | |
          */
         ChessMove enPassantMove = new ChessMove(new ChessPosition(5, 4), new ChessPosition(6, 3), null);
-        ChessBoard endBoard = loadBoard("""
+        ChessBoard endBoard = TestUtilities.loadBoard("""
                 | | | | | | | | |
                 | | | | | | | | |
                 | | |P| | | | | |
@@ -102,7 +101,7 @@ public class EnPassantTests {
     @Test
     @DisplayName("Black En Passant Right")
     public void enPassantBlackRight() throws InvalidMoveException {
-        ChessBoard board = loadBoard("""
+        ChessBoard board = TestUtilities.loadBoard("""
                 | | | |k| | | | |
                 | | | | | | | | |
                 | | | | | | | | |
@@ -124,7 +123,7 @@ public class EnPassantTests {
                 | | | | | | | | |
          */
         ChessMove enPassantMove = new ChessMove(new ChessPosition(4, 6), new ChessPosition(3, 7), null);
-        ChessBoard endBoard = loadBoard("""
+        ChessBoard endBoard = TestUtilities.loadBoard("""
                 | | | |k| | | | |
                 | | | | | | | | |
                 | | | | | | | | |
@@ -142,7 +141,7 @@ public class EnPassantTests {
     @Test
     @DisplayName("Black En Passant Left")
     public void enPassantBlackLeft() throws InvalidMoveException {
-        ChessBoard board = loadBoard("""
+        ChessBoard board = TestUtilities.loadBoard("""
                 | | | |k| | | | |
                 | | | | | | | | |
                 | | | | | | | | |
@@ -164,7 +163,7 @@ public class EnPassantTests {
                 | | | | | | | | |
          */
         ChessMove enPassantMove = new ChessMove(new ChessPosition(4, 8), new ChessPosition(3, 7), null);
-        ChessBoard endBoard = loadBoard("""
+        ChessBoard endBoard = TestUtilities.loadBoard("""
                 | | | |k| | | | |
                 | | | | | | | | |
                 | | | | | | | | |
@@ -181,7 +180,7 @@ public class EnPassantTests {
     @Test
     @DisplayName("Can Only En Passant on Next Turn")
     public void missedEnPassant() throws InvalidMoveException {
-        ChessBoard board = loadBoard("""
+        ChessBoard board = TestUtilities.loadBoard("""
                 | | | | |k| | | |
                 | | |p| | | | | |
                 | | | | | | | |P|
@@ -244,7 +243,7 @@ public class EnPassantTests {
 
         //en passant move works correctly
         Assertions.assertDoesNotThrow(() -> game.makeMove(enPassantMove));
-        Assertions.assertEquals(endBoard, game.getBoard());
+        Assertions.assertEquals(endBoard, game.getBoard(), "Incorrect Board after En Passant Move");
     }
 
 }
