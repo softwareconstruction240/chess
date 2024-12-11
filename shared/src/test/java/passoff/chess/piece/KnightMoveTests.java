@@ -2,14 +2,13 @@ package passoff.chess.piece;
 
 import chess.ChessPosition;
 import org.junit.jupiter.api.Test;
-
-import static passoff.chess.TestUtilities.validateMoves;
+import passoff.chess.TestUtilities;
 
 public class KnightMoveTests {
 
     @Test
     public void knightMiddleOfBoardWhite() {
-        validateMoves("""
+        TestUtilities.validateMoves("""
                         | | | | | | | | |
                         | | | | | | | | |
                         | | | | | | | | |
@@ -28,7 +27,7 @@ public class KnightMoveTests {
 
     @Test
     public void knightMiddleOfBoardBlack() {
-        validateMoves("""
+        TestUtilities.validateMoves("""
                         | | | | | | | | |
                         | | | | | | | | |
                         | | | | | | | | |
@@ -48,7 +47,7 @@ public class KnightMoveTests {
 
     @Test
     public void knightEdgeOfBoardLeft() {
-        validateMoves("""
+        TestUtilities.validateMoves("""
                         | | | | | | | | |
                         | | | | | | | | |
                         | | | | | | | | |
@@ -65,7 +64,7 @@ public class KnightMoveTests {
 
     @Test
     public void knightEdgeOfBoardRight() {
-        validateMoves("""
+        TestUtilities.validateMoves("""
                         | | | | | | | | |
                         | | | | | | | | |
                         | | | | | | | | |
@@ -82,7 +81,7 @@ public class KnightMoveTests {
 
     @Test
     public void knightEdgeOfBoardBottom() {
-        validateMoves("""
+        TestUtilities.validateMoves("""
                         | | | | | | | | |
                         | | | | | | | | |
                         | | | | | | | | |
@@ -99,7 +98,7 @@ public class KnightMoveTests {
 
     @Test
     public void knightEdgeOfBoardTop() {
-        validateMoves("""
+        TestUtilities.validateMoves("""
                         | | |N| | | | | |
                         | | | | | | | | |
                         | | | | | | | | |
@@ -117,7 +116,7 @@ public class KnightMoveTests {
 
     @Test
     public void knightCornerOfBoardBottomRight() {
-        validateMoves("""
+        TestUtilities.validateMoves("""
                         | | | | | | | | |
                         | | | | | | | | |
                         | | | | | | | | |
@@ -134,7 +133,7 @@ public class KnightMoveTests {
 
     @Test
     public void knightCornerOfBoardTopRight() {
-        validateMoves("""
+        TestUtilities.validateMoves("""
                         | | | | | | | |N|
                         | | | | | | | | |
                         | | | | | | | | |
@@ -151,7 +150,7 @@ public class KnightMoveTests {
 
     @Test
     public void knightCornerOfBoardTopLeft() {
-        validateMoves("""
+        TestUtilities.validateMoves("""
                         |n| | | | | | | |
                         | | | | | | | | |
                         | | | | | | | | |
@@ -168,7 +167,7 @@ public class KnightMoveTests {
 
     @Test
     public void knightCornerOfBoardBottomLeft() {
-        validateMoves("""
+        TestUtilities.validateMoves("""
                         | | | | | | | | |
                         | | | | | | | | |
                         | | | | | | | | |
@@ -185,7 +184,7 @@ public class KnightMoveTests {
 
     @Test
     public void knightSurroundedButNotBlocked() {
-        validateMoves("""
+        TestUtilities.validateMoves("""
                         | | | | | | | | |
                         | | | | | | | | |
                         | | | |R|R|R| | |
@@ -204,7 +203,7 @@ public class KnightMoveTests {
 
     @Test
     public void knightBlocked() {
-        validateMoves("""
+        TestUtilities.validateMoves("""
                         | | | | | | | | |
                         | | | |R| | | | |
                         | | | | | | |P| |
@@ -222,7 +221,7 @@ public class KnightMoveTests {
 
     @Test
     public void knightCaptureEnemy() {
-        validateMoves("""
+        TestUtilities.validateMoves("""
                         | | | | | | | | |
                         | | | | | | | | |
                         | | | | | | | | |
