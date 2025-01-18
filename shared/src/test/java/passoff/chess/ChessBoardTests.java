@@ -21,6 +21,7 @@ public class ChessBoardTests {
 
         ChessPiece foundPiece = board.getPiece(position);
 
+        Assertions.assertNotNull(foundPiece, "getPiece returned null for a position just added");
         Assertions.assertEquals(piece.getPieceType(), foundPiece.getPieceType(),
                 "ChessPiece returned by getPiece had the wrong piece type");
         Assertions.assertEquals(piece.getTeamColor(), foundPiece.getTeamColor(),
@@ -36,7 +37,7 @@ public class ChessBoardTests {
         var actualBoard = new ChessBoard();
         actualBoard.resetBoard();
 
-        Assertions.assertEquals(expectedBoard, actualBoard);
+        Assertions.assertEquals(expectedBoard, actualBoard, "Reset board did not create the correct board");
     }
 
 
