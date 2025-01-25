@@ -31,7 +31,7 @@ public class CastlingTests {
     @Test
     @DisplayName("White Team Can Castle")
     public void castleWhite() {
-        ChessBoard board = TestUtilities.loadBoard("""
+        ChessGame game1 = createNewGameWithBoard("""
                 | | | | |k| | | |
                 | | | | | | | | |
                 | | | | | | | | |
@@ -40,16 +40,13 @@ public class CastlingTests {
                 | | | | | | | | |
                 | | | | | | | | |
                 |R| | | |K| | |R|
-                """);
-        ChessGame game = new ChessGame();
-        game.setBoard(board);
-        game.setTeamTurn(ChessGame.TeamColor.WHITE);
+                """, ChessGame.TeamColor.WHITE);
 
         //check that with nothing in way, king can castle
-        assertWhiteCanCastle(game, true, true);
+        assertWhiteCanCastle(game1, true, true);
 
         //queen side castle works correctly
-        Assertions.assertDoesNotThrow(() -> game.makeMove(WHITE_QUEENSIDE_CASTLE));
+        Assertions.assertDoesNotThrow(() -> game1.makeMove(WHITE_QUEENSIDE_CASTLE));
         Assertions.assertEquals(TestUtilities.loadBoard("""
                 | | | | |k| | | |
                 | | | | | | | | |
@@ -59,10 +56,10 @@ public class CastlingTests {
                 | | | | | | | | |
                 | | | | | | | | |
                 | | |K|R| | | |R|
-                """), game.getBoard(), INCORRECT_BOARD);
+                """), game1.getBoard(), INCORRECT_BOARD);
 
         //reset board
-        board = TestUtilities.loadBoard("""
+        ChessGame game2 = createNewGameWithBoard("""
                 | | | | |k| | | |
                 | | | | | | | | |
                 | | | | | | | | |
@@ -71,12 +68,10 @@ public class CastlingTests {
                 | | | | | | | | |
                 | | | | | | | | |
                 |R| | | |K| | |R|
-                """);
-        game.setBoard(board);
-        game.setTeamTurn(ChessGame.TeamColor.WHITE);
+                """, ChessGame.TeamColor.WHITE);
 
         //king side castle works correctly
-        Assertions.assertDoesNotThrow(() -> game.makeMove(WHITE_KINGSIDE_CASTLE));
+        Assertions.assertDoesNotThrow(() -> game2.makeMove(WHITE_KINGSIDE_CASTLE));
         Assertions.assertEquals(TestUtilities.loadBoard("""
                 | | | | |k| | | |
                 | | | | | | | | |
@@ -86,14 +81,14 @@ public class CastlingTests {
                 | | | | | | | | |
                 | | | | | | | | |
                 |R| | | | |R|K| |
-                """), game.getBoard(), INCORRECT_BOARD);
+                """), game2.getBoard(), INCORRECT_BOARD);
     }
 
 
     @Test
     @DisplayName("Black Team Can Castle")
     public void castleBlack() {
-        ChessBoard board = TestUtilities.loadBoard("""
+        ChessGame game1 = createNewGameWithBoard("""
                 |r| | | |k| | |r|
                 | |p| | | | | |q|
                 | | | | | | | | |
@@ -102,16 +97,13 @@ public class CastlingTests {
                 | | | | | | | | |
                 | | | | |K| | | |
                 |R| | | | | | | |
-                """);
-        ChessGame game = new ChessGame();
-        game.setBoard(board);
-        game.setTeamTurn(ChessGame.TeamColor.BLACK);
+                """, ChessGame.TeamColor.BLACK);
 
         //check that with nothing in way, king can castle
-        assertBlackCanCastle(game, true, true);
+        assertBlackCanCastle(game1, true, true);
 
         //queen side castle works correctly
-        Assertions.assertDoesNotThrow(() -> game.makeMove(BLACK_QUEENSIDE_CASTLE));
+        Assertions.assertDoesNotThrow(() -> game1.makeMove(BLACK_QUEENSIDE_CASTLE));
         Assertions.assertEquals(TestUtilities.loadBoard("""
                 | | |k|r| | | |r|
                 | |p| | | | | |q|
@@ -121,11 +113,11 @@ public class CastlingTests {
                 | | | | | | | | |
                 | | | | |K| | | |
                 |R| | | | | | | |
-                """), game.getBoard(), INCORRECT_BOARD);
+                """), game1.getBoard(), INCORRECT_BOARD);
 
 
         //reset board
-        board = TestUtilities.loadBoard("""
+        ChessGame game2 = createNewGameWithBoard("""
                 |r| | | |k| | |r|
                 | |p| | | | | |q|
                 | | | | | | | | |
@@ -134,12 +126,10 @@ public class CastlingTests {
                 | | | | | | | | |
                 | | | | |K| | | |
                 |R| | | | | | | |
-                """);
-        game.setBoard(board);
-        game.setTeamTurn(ChessGame.TeamColor.BLACK);
+                """, ChessGame.TeamColor.BLACK);
 
         //king side castle works correctly
-        Assertions.assertDoesNotThrow(() -> game.makeMove(BLACK_KINGSIDE_CASTLE));
+        Assertions.assertDoesNotThrow(() -> game2.makeMove(BLACK_KINGSIDE_CASTLE));
         Assertions.assertEquals(TestUtilities.loadBoard("""
                 |r| | | | |r|k| |
                 | |p| | | | | |q|
@@ -149,14 +139,14 @@ public class CastlingTests {
                 | | | | | | | | |
                 | | | | |K| | | |
                 |R| | | | | | | |
-                """), game.getBoard(), INCORRECT_BOARD);
+                """), game2.getBoard(), INCORRECT_BOARD);
     }
 
 
     @Test
     @DisplayName("Cannot Castle Through Pieces")
     public void castlingBlockedByTeam() {
-        ChessBoard board = TestUtilities.loadBoard("""
+        ChessGame game = createNewGameWithBoard("""
                 | | | | |k| | | |
                 | | | | | | | | |
                 | | | | | | | | |
@@ -165,10 +155,7 @@ public class CastlingTests {
                 | | | | | | | | |
                 | | | | | | | | |
                 |R| |B| |K| |Q|R|
-                """);
-        ChessGame game = new ChessGame();
-        game.setBoard(board);
-        game.setTeamTurn(ChessGame.TeamColor.WHITE);
+                """, ChessGame.TeamColor.WHITE);
 
         //make sure king cannot castle
         assertWhiteCanCastle(game, false, false);
@@ -178,7 +165,7 @@ public class CastlingTests {
     @Test
     @DisplayName("Cannot Castle Through Check")
     public void castlingBlockedByEnemy() {
-        ChessBoard board = TestUtilities.loadBoard("""
+        ChessGame game = createNewGameWithBoard("""
                 |r| | | |k| | |r|
                 | | | | | | | | |
                 | |B| | | |R| | |
@@ -187,9 +174,7 @@ public class CastlingTests {
                 | |K| | | | | | |
                 | | | | | | | | |
                 | | | | | | | | |
-                """);
-        ChessGame game = new ChessGame();
-        game.setBoard(board);
+                """, ChessGame.TeamColor.BLACK);
 
         //make sure king cannot castle on either side
         assertBlackCanCastle(game, false, false);
@@ -199,7 +184,7 @@ public class CastlingTests {
     @Test
     @DisplayName("Cannot Castle After Moving")
     public void noCastleAfterMove() throws InvalidMoveException {
-        ChessBoard board = TestUtilities.loadBoard("""
+        ChessGame game = createNewGameWithBoard("""
                 | | |k| | | | | |
                 | | | | | | | | |
                 | | | | | | | | |
@@ -208,10 +193,7 @@ public class CastlingTests {
                 | | | | | | | | |
                 | | | | | | | | |
                 |R| | | |K| | |R|
-                """);
-        ChessGame game = new ChessGame();
-        game.setBoard(board);
-        game.setTeamTurn(ChessGame.TeamColor.WHITE);
+                """, ChessGame.TeamColor.WHITE);
 
         //move left rook
         game.makeMove(new ChessMove(new ChessPosition(1, 1), new ChessPosition(1, 4), null));
@@ -264,6 +246,15 @@ public class CastlingTests {
 
         //make sure king can't castle anymore
         assertWhiteCanCastle(game, false, false);
+    }
+
+
+    private ChessGame createNewGameWithBoard(String boardText, ChessGame.TeamColor teamTurn) {
+        ChessBoard board = TestUtilities.loadBoard(boardText);
+        ChessGame game = new ChessGame();
+        game.setBoard(board);
+        game.setTeamTurn(teamTurn);
+        return game;
     }
 
 
