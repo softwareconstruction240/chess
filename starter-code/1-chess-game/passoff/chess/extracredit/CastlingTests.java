@@ -232,13 +232,13 @@ public class CastlingTests {
         game.makeMove(new ChessMove(new ChessPosition(1, 4), new ChessPosition(1, 1), null));
         /*
                 | |k| | | | | | |
-		        | | | | | | | | |
-		        | | | | | | | | |
-		        | | | | | | | | |
-		        | | | | | | | | |
-		        | | | | | | | | |
-		        | | | | | | | | |
-		        |R| | | |K| | |R|
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                |R| | | |K| | |R|
          */
 
         ChessPosition kingPosition = new ChessPosition(1, 5);
