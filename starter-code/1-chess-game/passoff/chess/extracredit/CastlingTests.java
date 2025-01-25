@@ -145,7 +145,7 @@ public class CastlingTests {
 
     @Test
     @DisplayName("Cannot Castle Through Pieces")
-    public void castlingBlockedByTeam() {
+    public void noCastleThroughPieces() {
         ChessGame game = createNewGameWithBoard("""
                 | | | | |k| | | |
                 | | | | | | | | |
@@ -164,7 +164,7 @@ public class CastlingTests {
 
     @Test
     @DisplayName("Cannot Castle Through Check")
-    public void castlingBlockedByEnemy() {
+    public void noCastleThroughCheck() {
         ChessGame game = createNewGameWithBoard("""
                 |r| | | |k| | |r|
                 | | | | | | | | |
@@ -250,7 +250,7 @@ public class CastlingTests {
 
     @Test
     @DisplayName("Cannot Castle From Check")
-    public void castlingDisallowedWhileInCheck() {
+    public void noCastleFromCheck() {
         ChessGame game = createNewGameWithBoard("""
                 |r| | | |k| | |r|
                 | | | | | | |N| |
@@ -268,7 +268,7 @@ public class CastlingTests {
 
     @Test
     @DisplayName("Cannot Castle Into Check")
-    public void castlingIntoCheck() {
+    public void noCastleIntoCheck() {
         ChessGame game1 = createNewGameWithBoard("""
                 | | | | |k| | | |
                 | | | | | | | | |
