@@ -20,7 +20,7 @@ public class CastlingTests {
     private static final String INCORRECT_BOARD = "Wrong board after castle move made";
 
     @Test
-    @DisplayName("White Team Castle")
+    @DisplayName("White Team Can Castle")
     public void castleWhite() {
         ChessBoard board = TestUtilities.loadBoard("""
                 | | | | |k| | | |
@@ -87,7 +87,7 @@ public class CastlingTests {
 
 
     @Test
-    @DisplayName("Black Team Castle")
+    @DisplayName("Black Team Can Castle")
     public void castleBlack() {
         ChessBoard board = TestUtilities.loadBoard("""
                 |r| | | |k| | |r|
@@ -183,12 +183,12 @@ public class CastlingTests {
 
 
     @Test
-    @DisplayName("Cannot Castle in Check")
+    @DisplayName("Cannot Castle Through Check")
     public void castlingBlockedByEnemy() {
         ChessBoard board = TestUtilities.loadBoard("""
-                |r| | |B|k| | |r|
+                |r| | | |k| | |r|
                 | | | | | | | | |
-                | | | | | |R| | |
+                | |B| | | |R| | |
                 | | | | | | | | |
                 | | | | | | | | |
                 | |K| | | | | | |
