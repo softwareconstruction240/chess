@@ -248,6 +248,58 @@ public class CastlingTests {
         assertWhiteCanCastle(game, false, false);
     }
 
+    @Test
+    @DisplayName("Cannot Castle From Check")
+    public void castlingDisallowedWhileInCheck() {
+        ChessGame game = createNewGameWithBoard("""
+                |r| | | |k| | |r|
+                | | | | | | |N| |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | |K| | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                """, ChessGame.TeamColor.BLACK);
+
+        //make sure king cannot castle on either side
+        assertBlackCanCastle(game, false, false);
+    }
+
+    @Test
+    @DisplayName("Cannot Castle Into Check")
+    public void castlingIntoCheck() {
+        ChessGame game1 = createNewGameWithBoard("""
+                | | | | |k| | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | |r| | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                |R| | | |K| | |R|
+                """, ChessGame.TeamColor.WHITE);
+
+        // King cannot castle into check
+        assertWhiteCanCastle(game1, false, true);
+
+
+        // Try again in the other direction
+        ChessGame game2 = createNewGameWithBoard("""
+                | | | | |k| | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | |r| |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                |R| | | |K| | |R|
+                """, ChessGame.TeamColor.WHITE);
+
+        // King cannot castle into check
+        assertWhiteCanCastle(game2, true, false);
+    }
+
 
     private ChessGame createNewGameWithBoard(String boardText, ChessGame.TeamColor teamTurn) {
         ChessBoard board = TestUtilities.loadBoard(boardText);
