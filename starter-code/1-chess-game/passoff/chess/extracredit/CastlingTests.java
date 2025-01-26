@@ -3,6 +3,7 @@ package passoff.chess.extracredit;
 import chess.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import passoff.chess.TestUtilities;
 
@@ -29,6 +30,7 @@ public class CastlingTests {
 
 
     @Test
+    @Order(0)
     @DisplayName("White Team Can Castle")
     public void castleWhite() {
         ChessGame game1 = createNewGameWithBoard("""
@@ -82,8 +84,8 @@ public class CastlingTests {
                 """);
     }
 
-
     @Test
+    @Order(0)
     @DisplayName("Black Team Can Castle")
     public void castleBlack() {
         ChessGame game1 = createNewGameWithBoard("""
@@ -138,46 +140,8 @@ public class CastlingTests {
                 """);
     }
 
-
     @Test
-    @DisplayName("Cannot Castle Through Pieces")
-    public void noCastleThroughPieces() {
-        ChessGame game = createNewGameWithBoard("""
-                | | | | |k| | | |
-                | | | | | | | | |
-                | | | | | | | | |
-                | | | | | | | | |
-                | | | | | | | | |
-                | | | | | | | | |
-                | | | | | | | | |
-                |R| |B| |K| |Q|R|
-                """, ChessGame.TeamColor.WHITE);
-
-        //make sure king cannot castle
-        assertWhiteCanCastle(game, false, false);
-    }
-
-
-    @Test
-    @DisplayName("Cannot Castle Through Check")
-    public void noCastleThroughCheck() {
-        ChessGame game = createNewGameWithBoard("""
-                |r| | | |k| | |r|
-                | | | | | | | | |
-                | |B| | | |R| | |
-                | | | | | | | | |
-                | | | | | | | | |
-                | |K| | | | | | |
-                | | | | | | | | |
-                | | | | | | | | |
-                """, ChessGame.TeamColor.BLACK);
-
-        //make sure king cannot castle on either side
-        assertBlackCanCastle(game, false, false);
-    }
-
-
-    @Test
+    @Order(1)
     @DisplayName("Cannot Castle After Moving")
     public void noCastleAfterMove() throws InvalidMoveException {
         ChessGame game = createNewGameWithBoard("""
@@ -245,6 +209,26 @@ public class CastlingTests {
     }
 
     @Test
+    @Order(2)
+    @DisplayName("Cannot Castle Through Pieces")
+    public void noCastleThroughPieces() {
+        ChessGame game = createNewGameWithBoard("""
+                | | | | |k| | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                |R| |B| |K| |Q|R|
+                """, ChessGame.TeamColor.WHITE);
+
+        //make sure king cannot castle
+        assertWhiteCanCastle(game, false, false);
+    }
+
+    @Test
+    @Order(3)
     @DisplayName("Cannot Castle From Check")
     public void noCastleFromCheck() {
         ChessGame game = createNewGameWithBoard("""
@@ -263,6 +247,26 @@ public class CastlingTests {
     }
 
     @Test
+    @Order(3)
+    @DisplayName("Cannot Castle Through Check")
+    public void noCastleThroughCheck() {
+        ChessGame game = createNewGameWithBoard("""
+                |r| | | |k| | |r|
+                | | | | | | | | |
+                | |B| | | |R| | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | |K| | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                """, ChessGame.TeamColor.BLACK);
+
+        //make sure king cannot castle on either side
+        assertBlackCanCastle(game, false, false);
+    }
+
+    @Test
+    @Order(3)
     @DisplayName("Cannot Castle Into Check")
     public void noCastleIntoCheck() {
         ChessGame game1 = createNewGameWithBoard("""
