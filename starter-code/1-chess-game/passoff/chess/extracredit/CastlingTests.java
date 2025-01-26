@@ -306,10 +306,28 @@ public class CastlingTests {
     }
 
 
+    /**
+     * Asserts that WHITE can or cannot make the queenside & kingside castle moves.
+     * <br>
+     * The parameter order aligns with the board when drawn from WHITE's perspective:
+     * <ul>
+     *     <li><b>Queenside</b> is to the <i>left</i></li>
+     *     <li><b>Kingside</b> is to the <i>right</i></li>
+     * </ul>
+     */
     private void assertWhiteCanCastle(ChessGame game, boolean allowQueensideCastle, boolean allowKingsideCastle) {
         assertCanCastle(game, allowQueensideCastle, allowKingsideCastle, WHITE_KING_POSITION, WHITE_QUEENSIDE_CASTLE, WHITE_KINGSIDE_CASTLE);
     }
-    private void assertBlackCanCastle(ChessGame game, boolean allowQueensideCastle, boolean allowKingsideCastle) {
+    /**
+     * Asserts that BLACK can or cannot make the queenside & kingside castle moves.
+     * <br>
+     * The parameter order aligns with the board when drawn from WHITE's perspective:
+     * <ul>
+     *     <li><b>Kingside</b> is to the <i>left</i></li>
+     *     <li><b>Queenside</b> is to the <i>right</i></li>
+     * </ul>
+     */
+    private void assertBlackCanCastle(ChessGame game, boolean allowKingsideCastle, boolean allowQueensideCastle) {
         assertCanCastle(game, allowQueensideCastle, allowKingsideCastle, BLACK_KING_POSITION, BLACK_QUEENSIDE_CASTLE, BLACK_KINGSIDE_CASTLE);
     }
     private void assertCanCastle(ChessGame game, boolean allowQueensideCastle, boolean allowKingsideCastle,
