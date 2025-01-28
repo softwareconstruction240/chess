@@ -16,17 +16,16 @@ public abstract class EqualsTestingUtility<T> {
     private Collection<T> allDifferent;
 
     protected abstract String getItemsPlural();
-    protected abstract T getOriginal();
-    protected abstract T getEqual();
-    protected abstract Collection<T> getAllDifferent();
+    protected abstract T buildOriginal();
+    protected abstract Collection<T> buildAllDifferent();
 
 
     @BeforeEach
     public void setUp() {
         itemsPlural = getItemsPlural();
-        original = getOriginal();
-        equal = getEqual();
-        allDifferent = getAllDifferent();
+        original = buildOriginal();
+        equal = buildOriginal(); // For a second time
+        allDifferent = buildAllDifferent();
     }
 
     @Test

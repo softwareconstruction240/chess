@@ -13,17 +13,12 @@ public class ChessPieceTests extends EqualsTestingUtility<ChessPiece> {
     }
 
     @Override
-    protected ChessPiece getOriginal() {
+    protected ChessPiece buildOriginal() {
         return new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
     }
 
     @Override
-    protected ChessPiece getEqual() {
-        return new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
-    }
-
-    @Override
-    protected Collection<ChessPiece> getAllDifferent() {
+    protected Collection<ChessPiece> buildAllDifferent() {
         return List.of(
                 new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN)
         );
