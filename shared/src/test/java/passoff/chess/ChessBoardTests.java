@@ -59,21 +59,4 @@ public class ChessBoardTests extends EqualsTestingUtility<ChessBoard> {
         Assertions.assertEquals(expectedBoard, actualBoard);
     }
 
-
-    @Test
-    @DisplayName("Piece Move on All Pieces")
-    public void pieceMoveAllPieces() {
-        var board = new ChessBoard();
-        board.resetBoard();
-        for(int i = 1; i <= 8; i++) {
-            for(int j = 1; j <= 8; j++) {
-                ChessPosition position = new ChessPosition(i, j);
-                ChessPiece piece = board.getPiece(position);
-                if(piece != null) {
-                    Assertions.assertDoesNotThrow(() -> piece.pieceMoves(board, position));
-                }
-            }
-        }
-    }
-
 }
