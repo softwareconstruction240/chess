@@ -8,7 +8,27 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class ChessBoardTests {
+import java.util.Collection;
+import java.util.List;
+
+public class ChessBoardTests extends EqualsTestingUtility<ChessBoard> {
+    public ChessBoardTests() {
+        super("ChessBoard", "boards");
+    }
+
+    @Override
+    protected ChessBoard buildOriginal() {
+        var basicBoard = new ChessBoard();
+        basicBoard.resetBoard();
+        return basicBoard;
+    }
+
+    @Override
+    protected Collection<ChessBoard> buildAllDifferent() {
+        return List.of(
+                new ChessBoard() // Empty
+        );
+    }
 
     @Test
     @DisplayName("Add and Get Piece")
