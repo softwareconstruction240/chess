@@ -73,6 +73,22 @@ public class ChessBoardTests extends EqualsTestingUtility<ChessBoard> {
     }
 
     @Test
+    @DisplayName("Construct Empty ChessBoard")
+    public void constructChessBoard() {
+        ChessBoard board = new ChessBoard();
+
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                Assertions.assertNull(
+                        board.getPiece(new ChessPosition(row, col)),
+                        "Immediately upon construction, a ChessBoard should be empty."
+                );
+            }
+        }
+
+    }
+
+    @Test
     @DisplayName("Add and Get Piece")
     public void getAddPiece() {
         ChessPosition position = new ChessPosition(4, 4);
