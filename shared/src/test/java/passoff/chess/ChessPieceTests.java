@@ -35,7 +35,7 @@ public class ChessPieceTests {
     }
 
     @Test
-    @DisplayName("Combined Testing")
+    @DisplayName("Equals & HashCode Testing")
     public void hashSetTest() {
         // FIXME: Add thorough testing for equality differences
     }

@@ -51,7 +51,7 @@ public class ChessMoveTests {
     }
 
     @Test
-    @DisplayName("Combined Testing")
+    @DisplayName("Equals & HashCode Testing")
     public void hashSetTest() {
         Set<ChessMove> set = new HashSet<>();
         set.add(original);

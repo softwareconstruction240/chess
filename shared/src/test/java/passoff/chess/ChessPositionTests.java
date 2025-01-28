@@ -37,7 +37,7 @@ public class ChessPositionTests {
     }
 
     @Test
-    @DisplayName("Combined Testing")
+    @DisplayName("Equals & HashCode Testing")
     public void hashSetTest() {
         Set<ChessPosition> set = new HashSet<>();
         set.add(original);
