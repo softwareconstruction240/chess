@@ -7,9 +7,8 @@ import java.util.Collection;
 import java.util.List;
 
 public class ChessPieceTests extends EqualsTestingUtility<ChessPiece> {
-    @Override
-    protected String getItemsPlural() {
-        return "pieces";
+    public ChessPieceTests() {
+        super("ChessPiece", "pieces");
     }
 
     @Override
