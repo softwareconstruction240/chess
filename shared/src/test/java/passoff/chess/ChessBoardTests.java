@@ -31,35 +31,33 @@ public class ChessBoardTests extends EqualsTestingUtility<ChessBoard> {
 
         differentBoards.add(new ChessBoard()); // An empty board
 
-        // Generate boards with random pieces added along some edges and primary diagonal
+        // Generate boards each with one random piece added an edge or the primary diagonal
         /*
         Each 'X' is a different default board that will be tested.
-        Each 's' represents a starting piece after calling resetBoard().
 
-                |X|s|s|s|s|s|s|X|
-                |X|s|s|s|s|s|X|s|
+                |X| | | | | | |X|
+                |X| | | | | |X| |
                 |X| | | | |X| | |
                 |X| | | |X| | | |
                 |X| | |X| | | | |
                 |X| |X| | | | | |
-                |X|X|s|s|s|s|s|s|
+                |X|X| | | | | | |
                 |X|X|X|X|X|X|X|X|
          */
         Random random = new Random();
         for (int i = 1; i <= 8; i++) {
-            differentBoards.add(createDefaultBoardWithRandomPieceAddedInPosition(i, i, random));
+            differentBoards.add(createBoardWithRandomPieceAddedInPosition(i, i, random));
             if (i != 1) {
-                differentBoards.add(createDefaultBoardWithRandomPieceAddedInPosition(1, i, random));
-                differentBoards.add(createDefaultBoardWithRandomPieceAddedInPosition(i, 1, random));
+                differentBoards.add(createBoardWithRandomPieceAddedInPosition(1, i, random));
+                differentBoards.add(createBoardWithRandomPieceAddedInPosition(i, 1, random));
             }
         }
 
         return differentBoards;
     }
 
-    private ChessBoard createDefaultBoardWithRandomPieceAddedInPosition(int row, int col, Random random) {
+    private ChessBoard createBoardWithRandomPieceAddedInPosition(int row, int col, Random random) {
         var board = new ChessBoard();
-        board.resetBoard();
 
         var pieceTypes = List.of(ChessPiece.PieceType.values());
         var randomPieceType = pieceTypes.get(random.nextInt(pieceTypes.size()));
