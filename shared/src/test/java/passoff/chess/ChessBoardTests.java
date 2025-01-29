@@ -18,6 +18,50 @@ public class ChessBoardTests extends EqualsTestingUtility<ChessBoard> {
         super("ChessBoard", "boards");
     }
 
+    @Test
+    @DisplayName("Construct Empty ChessBoard")
+    public void constructChessBoard() {
+        ChessBoard board = new ChessBoard();
+
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                Assertions.assertNull(
+                        board.getPiece(new ChessPosition(row, col)),
+                        "Immediately upon construction, a ChessBoard should be empty."
+                );
+            }
+        }
+
+    }
+
+    @Test
+    @DisplayName("Add and Get Piece")
+    public void getAddPiece() {
+        ChessPosition position = new ChessPosition(4, 4);
+        ChessPiece piece = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
+
+        var board = new ChessBoard();
+        board.addPiece(position, piece);
+
+        ChessPiece foundPiece = board.getPiece(position);
+
+        Assertions.assertEquals(piece.getPieceType(), foundPiece.getPieceType(),
+                "ChessPiece returned by getPiece had the wrong piece type");
+        Assertions.assertEquals(piece.getTeamColor(), foundPiece.getTeamColor(),
+                "ChessPiece returned by getPiece had the wrong team color");
+    }
+
+    @Test
+    @DisplayName("Reset Board")
+    public void defaultGameBoard() {
+        var expectedBoard = TestUtilities.defaultBoard();
+
+        var actualBoard = new ChessBoard();
+        actualBoard.resetBoard();
+
+        Assertions.assertEquals(expectedBoard, actualBoard);
+    }
+
     @Override
     protected ChessBoard buildOriginal() {
         var basicBoard = new ChessBoard();
@@ -68,51 +112,6 @@ public class ChessBoardTests extends EqualsTestingUtility<ChessBoard> {
         board.addPiece(position, piece);
 
         return board;
-    }
-
-    @Test
-    @DisplayName("Construct Empty ChessBoard")
-    public void constructChessBoard() {
-        ChessBoard board = new ChessBoard();
-
-        for (int row = 1; row <= 8; row++) {
-            for (int col = 1; col <= 8; col++) {
-                Assertions.assertNull(
-                        board.getPiece(new ChessPosition(row, col)),
-                        "Immediately upon construction, a ChessBoard should be empty."
-                );
-            }
-        }
-
-    }
-
-    @Test
-    @DisplayName("Add and Get Piece")
-    public void getAddPiece() {
-        ChessPosition position = new ChessPosition(4, 4);
-        ChessPiece piece = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
-
-        var board = new ChessBoard();
-        board.addPiece(position, piece);
-
-        ChessPiece foundPiece = board.getPiece(position);
-
-        Assertions.assertEquals(piece.getPieceType(), foundPiece.getPieceType(),
-                "ChessPiece returned by getPiece had the wrong piece type");
-        Assertions.assertEquals(piece.getTeamColor(), foundPiece.getTeamColor(),
-                "ChessPiece returned by getPiece had the wrong team color");
-    }
-
-
-    @Test
-    @DisplayName("Reset Board")
-    public void defaultGameBoard() {
-        var expectedBoard = TestUtilities.defaultBoard();
-
-        var actualBoard = new ChessBoard();
-        actualBoard.resetBoard();
-
-        Assertions.assertEquals(expectedBoard, actualBoard);
     }
 
 }
