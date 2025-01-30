@@ -83,11 +83,13 @@ public class ChessBoardTests extends EqualsTestingUtility<ChessBoard> {
 
         // Generate boards each with one piece added from a static list.
         // The color is assigned in a mixed pattern.
+        ChessPiece.PieceType type;
         boolean isWhite;
         for (int col = 1; col <= 8; col++) {
             for (int row = 1; row <= 8; row++) {
+                type = pieceSchedule[row-1];
                 isWhite = (row + col) % 2 == 0;
-                differentBoards.add(createBoardWithPiece(row, col, pieceSchedule[row], isWhite));
+                differentBoards.add(createBoardWithPiece(row, col, type, isWhite));
             }
         }
 
