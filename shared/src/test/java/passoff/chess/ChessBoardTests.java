@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Random;
 
 public class ChessBoardTests extends EqualsTestingUtility<ChessBoard> {
     public ChessBoardTests() {
@@ -75,38 +74,31 @@ public class ChessBoardTests extends EqualsTestingUtility<ChessBoard> {
 
         differentBoards.add(new ChessBoard()); // An empty board
 
-        // Generate boards each with one random piece added an edge or the primary diagonal
-        /*
-        Each 'X' is a different default board that will be tested.
+        ChessPiece.PieceType[] pieceSchedule = {
+                ChessPiece.PieceType.ROOK, ChessPiece.PieceType.KNIGHT,
+                ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.QUEEN,
+                ChessPiece.PieceType.KING, ChessPiece.PieceType.PAWN,
+                ChessPiece.PieceType.KING, ChessPiece.PieceType.ROOK,
+        };
 
-                |X| | | | | | |X|
-                |X| | | | | |X| |
-                |X| | | | |X| | |
-                |X| | | |X| | | |
-                |X| | |X| | | | |
-                |X| |X| | | | | |
-                |X|X| | | | | | |
-                |X|X|X|X|X|X|X|X|
-         */
-        Random random = new Random();
-        for (int i = 1; i <= 8; i++) {
-            differentBoards.add(createBoardWithRandomPieceAddedInPosition(i, i, random));
-            if (i != 1) {
-                differentBoards.add(createBoardWithRandomPieceAddedInPosition(1, i, random));
-                differentBoards.add(createBoardWithRandomPieceAddedInPosition(i, 1, random));
+        // Generate boards each with one piece added from a static list.
+        // The color is assigned in a mixed pattern.
+        boolean isWhite;
+        for (int col = 1; col <= 8; col++) {
+            for (int row = 1; row <= 8; row++) {
+                isWhite = (row + col) % 2 == 0;
+                differentBoards.add(createBoardWithPiece(row, col, pieceSchedule[row], isWhite));
             }
         }
 
         return differentBoards;
     }
 
-    private ChessBoard createBoardWithRandomPieceAddedInPosition(int row, int col, Random random) {
+    private ChessBoard createBoardWithPiece(int row, int col, ChessPiece.PieceType type, boolean isWhite) {
         var board = new ChessBoard();
 
-        var pieceTypes = List.of(ChessPiece.PieceType.values());
-        var randomPieceType = pieceTypes.get(random.nextInt(pieceTypes.size()));
-        var randomTeamColor = random.nextBoolean() ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
-        var piece = new ChessPiece(randomTeamColor, randomPieceType);
+        var teamColor = isWhite ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
+        var piece = new ChessPiece(teamColor, type);
 
         var position = new ChessPosition(row, col);
         board.addPiece(position, piece);
