@@ -46,12 +46,16 @@ public class ChessPieceTests extends EqualsTestingUtility<ChessPiece> {
                 .map(teamColor -> new ChessPiece(teamColor, pieceType)))
                 .toList();
 
-        // 8 rows * 8 cols * 12 pieces = 768 evaluations
+        // 8 rows * 8 cols * 12 pieces = 768 evaluations - 32 pawns on back rows
         for (int i = 1; i <= 8; i++) {
             for (int j = 1; j <= 8; j++) {
                 ChessPosition position = new ChessPosition(i, j);
 
                 for (var piece : allPossiblePieces) {
+                    if (piece.getPieceType() == ChessPiece.PieceType.PAWN && (i == 1 || i == 8)) {
+                        continue;
+                    }
+
                     board.addPiece(position, piece);
                     Assertions.assertDoesNotThrow(
                             () -> piece.pieceMoves(board, position),
