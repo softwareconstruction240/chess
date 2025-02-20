@@ -8,7 +8,27 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class ChessBoardTests {
+import java.util.Collection;
+import java.util.List;
+
+public class ChessBoardTests extends EqualsTestingUtility<ChessBoard> {
+    public ChessBoardTests() {
+        super("ChessBoard", "boards");
+    }
+
+    @Override
+    protected ChessBoard buildOriginal() {
+        var basicBoard = new ChessBoard();
+        basicBoard.resetBoard();
+        return basicBoard;
+    }
+
+    @Override
+    protected Collection<ChessBoard> buildAllDifferent() {
+        return List.of(
+                new ChessBoard() // Empty
+        );
+    }
 
     @Test
     @DisplayName("Add and Get Piece")
@@ -37,23 +57,6 @@ public class ChessBoardTests {
         actualBoard.resetBoard();
 
         Assertions.assertEquals(expectedBoard, actualBoard);
-    }
-
-
-    @Test
-    @DisplayName("Piece Move on All Pieces")
-    public void pieceMoveAllPieces() {
-        var board = new ChessBoard();
-        board.resetBoard();
-        for(int i = 1; i <= 8; i++) {
-            for(int j = 1; j <= 8; j++) {
-                ChessPosition position = new ChessPosition(i, j);
-                ChessPiece piece = board.getPiece(position);
-                if(piece != null) {
-                    Assertions.assertDoesNotThrow(() -> piece.pieceMoves(board, position));
-                }
-            }
-        }
     }
 
 }
