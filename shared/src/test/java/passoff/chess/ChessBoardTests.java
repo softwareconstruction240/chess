@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -16,18 +17,20 @@ public class ChessBoardTests extends EqualsTestingUtility<ChessBoard> {
         super("ChessBoard", "boards");
     }
 
-    @Override
-    protected ChessBoard buildOriginal() {
-        var basicBoard = new ChessBoard();
-        basicBoard.resetBoard();
-        return basicBoard;
-    }
+    @Test
+    @DisplayName("Construct Empty ChessBoard")
+    public void constructChessBoard() {
+        ChessBoard board = new ChessBoard();
 
-    @Override
-    protected Collection<ChessBoard> buildAllDifferent() {
-        return List.of(
-                new ChessBoard() // Empty
-        );
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                Assertions.assertNull(
+                        board.getPiece(new ChessPosition(row, col)),
+                        "Immediately upon construction, a ChessBoard should be empty."
+                );
+            }
+        }
+
     }
 
     @Test
@@ -47,7 +50,6 @@ public class ChessBoardTests extends EqualsTestingUtility<ChessBoard> {
                 "ChessPiece returned by getPiece had the wrong team color");
     }
 
-
     @Test
     @DisplayName("Reset Board")
     public void defaultGameBoard() {
@@ -57,6 +59,53 @@ public class ChessBoardTests extends EqualsTestingUtility<ChessBoard> {
         actualBoard.resetBoard();
 
         Assertions.assertEquals(expectedBoard, actualBoard);
+    }
+
+    @Override
+    protected ChessBoard buildOriginal() {
+        var basicBoard = new ChessBoard();
+        basicBoard.resetBoard();
+        return basicBoard;
+    }
+
+    @Override
+    protected Collection<ChessBoard> buildAllDifferent() {
+        List<ChessBoard> differentBoards = new ArrayList<>();
+
+        differentBoards.add(new ChessBoard()); // An empty board
+
+        ChessPiece.PieceType[] pieceSchedule = {
+                ChessPiece.PieceType.ROOK, ChessPiece.PieceType.KNIGHT,
+                ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.QUEEN,
+                ChessPiece.PieceType.KING, ChessPiece.PieceType.PAWN,
+                ChessPiece.PieceType.KING, ChessPiece.PieceType.ROOK,
+        };
+
+        // Generate boards each with one piece added from a static list.
+        // The color is assigned in a mixed pattern.
+        ChessPiece.PieceType type;
+        boolean isWhite;
+        for (int col = 1; col <= 8; col++) {
+            for (int row = 1; row <= 8; row++) {
+                type = pieceSchedule[row-1];
+                isWhite = (row + col) % 2 == 0;
+                differentBoards.add(createBoardWithPiece(row, col, type, isWhite));
+            }
+        }
+
+        return differentBoards;
+    }
+
+    private ChessBoard createBoardWithPiece(int row, int col, ChessPiece.PieceType type, boolean isWhite) {
+        var board = new ChessBoard();
+
+        var teamColor = isWhite ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
+        var piece = new ChessPiece(teamColor, type);
+
+        var position = new ChessPosition(row, col);
+        board.addPiece(position, piece);
+
+        return board;
     }
 
 }
