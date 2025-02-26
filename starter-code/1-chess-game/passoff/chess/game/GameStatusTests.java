@@ -79,8 +79,7 @@ public class GameStatusTests {
                 | | | | | | | | |
                 """));
 
-        Assertions.assertTrue(game.isInCheck(ChessGame.TeamColor.BLACK),
-                "Black is in check but isInCheck returned false");
+        Assertions.assertTrue(game.isInCheck(ChessGame.TeamColor.BLACK), MISSING_BLACK_CHECK);
         Assertions.assertFalse(game.isInCheck(ChessGame.TeamColor.WHITE), INCORRECT_WHITE_CHECK);
     }
 
