@@ -79,6 +79,24 @@ public class StandardAPITests {
 
     @Test
     @Order(3)
+    @DisplayName("Login Bad Request")
+    public void loginBadRequest() {
+        TestUser[] usersMissingInformation = {
+            new TestUser(null, existingUser.getPassword(), existingUser.getEmail()),
+            new TestUser(existingUser.getUsername(), null, existingUser.getEmail()),
+            new TestUser(existingUser.getUsername(), existingUser.getPassword(), null),
+        };
+
+        for (TestUser userMissingInformation : usersMissingInformation) {
+            TestAuthResult loginResult = serverFacade.login(userMissingInformation);
+
+            assertHttpBadRequest(loginResult);
+            assertAuthFieldsMissing(loginResult);
+        }
+    }
+
+    @Test
+    @Order(3)
     @DisplayName("Login Invalid User")
     public void loginInvalidUser() {
         TestAuthResult loginResult = serverFacade.login(newUser);
