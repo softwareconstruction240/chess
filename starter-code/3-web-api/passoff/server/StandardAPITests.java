@@ -56,7 +56,7 @@ public class StandardAPITests {
     @Test
     @Order(1)
     @DisplayName("Static Files")
-    public void staticFiles() {
+    public void staticFilesSuccess() {
         String htmlFromServer = serverFacade.file("/").replaceAll("\r", "");
         Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
                 "Server response code was not 200 OK");
@@ -68,7 +68,7 @@ public class StandardAPITests {
     @Test
     @Order(2)
     @DisplayName("Normal User Login")
-    public void successLogin() {
+    public void loginSuccess() {
         TestAuthResult loginResult = serverFacade.login(existingUser);
 
         assertHttpOk(loginResult);
@@ -81,14 +81,14 @@ public class StandardAPITests {
     @Order(3)
     @DisplayName("Login Bad Request")
     public void loginBadRequest() {
-        TestUser[] usersMissingInformation = {
+        TestUser[] incompleteLoginRequests = {
             new TestUser(null, existingUser.getPassword(), existingUser.getEmail()),
             new TestUser(existingUser.getUsername(), null, existingUser.getEmail()),
             new TestUser(existingUser.getUsername(), existingUser.getPassword(), null),
         };
 
-        for (TestUser userMissingInformation : usersMissingInformation) {
-            TestAuthResult loginResult = serverFacade.login(userMissingInformation);
+        for (TestUser incompleteLoginRequest : incompleteLoginRequests) {
+            TestAuthResult loginResult = serverFacade.login(incompleteLoginRequest);
 
             assertHttpBadRequest(loginResult);
             assertAuthFieldsMissing(loginResult);
@@ -120,7 +120,7 @@ public class StandardAPITests {
     @Test
     @Order(4)
     @DisplayName("Normal User Registration")
-    public void successRegister() {
+    public void registerSuccess() {
         //submit register request
         TestAuthResult registerResult = serverFacade.register(newUser);
 
@@ -144,10 +144,9 @@ public class StandardAPITests {
     @Test
     @Order(5)
     @DisplayName("Register Bad Request")
-    public void failRegister() {
+    public void registerBadRequest() {
         //attempt to register a user without a password
         TestUser registerRequest = new TestUser(newUser.getUsername(), null, newUser.getEmail());
-
         TestAuthResult registerResult = serverFacade.register(registerRequest);
 
         assertHttpBadRequest(registerResult);
@@ -157,7 +156,7 @@ public class StandardAPITests {
     @Test
     @Order(6)
     @DisplayName("Normal Logout")
-    public void successLogout() {
+    public void logoutSuccess() {
         //log out existing user
         TestResult result = serverFacade.logout(existingAuth);
 
@@ -167,7 +166,7 @@ public class StandardAPITests {
     @Test
     @Order(7)
     @DisplayName("Invalid Auth Logout")
-    public void failLogout() {
+    public void logoutTwice() {
         //log out user twice
         //second logout should fail
         serverFacade.logout(existingAuth);
@@ -179,7 +178,7 @@ public class StandardAPITests {
     @Test
     @Order(8)
     @DisplayName("Valid Creation")
-    public void goodCreate() {
+    public void createGameSuccess() {
         TestCreateResult createResult = serverFacade.createGame(createRequest, existingAuth);
 
         assertHttpOk(createResult);
@@ -190,7 +189,7 @@ public class StandardAPITests {
     @Test
     @Order(9)
     @DisplayName("Create with Bad Authentication")
-    public void badAuthCreate() {
+    public void createGameUnauthorized() {
         //log out user so auth is invalid
         serverFacade.logout(existingAuth);
 
@@ -203,7 +202,7 @@ public class StandardAPITests {
     @Test
     @Order(10)
     @DisplayName("Join Created Game")
-    public void goodJoin() {
+    public void joinGameSuccess() {
         //create game
         TestCreateResult createResult = serverFacade.createGame(createRequest, existingAuth);
 
@@ -228,7 +227,7 @@ public class StandardAPITests {
     @Test
     @Order(11)
     @DisplayName("Join Bad Authentication")
-    public void badAuthJoin() {
+    public void joinGameUnauthorized() {
         //create game
         TestCreateResult createResult = serverFacade.createGame(createRequest, existingAuth);
 
@@ -243,7 +242,7 @@ public class StandardAPITests {
     @Test
     @Order(11)
     @DisplayName("Join Bad Team Color")
-    public void badColorJoin() {
+    public void joinGameBadColor() {
         TestCreateResult createResult = serverFacade.createGame(createRequest, existingAuth);
         int gameID = createResult.getGameID();
 
@@ -256,7 +255,7 @@ public class StandardAPITests {
     @Test
     @Order(11)
     @DisplayName("Join Steal Team Color")
-    public void stealColorJoin() {
+    public void joinGameStealColor() {
         //create game
         TestCreateResult createResult = serverFacade.createGame(createRequest, existingAuth);
 
@@ -277,7 +276,7 @@ public class StandardAPITests {
     @Test
     @Order(11)
     @DisplayName("Join Bad Game ID")
-    public void badGameIDJoin() {
+    public void joinGameBadGameId() {
         //create game
         createRequest = new TestCreateRequest("Bad Join");
         serverFacade.createGame(createRequest, existingAuth);
@@ -293,7 +292,7 @@ public class StandardAPITests {
     @Test
     @Order(12)
     @DisplayName("List No Games")
-    public void noGamesList() {
+    public void listGamesEmpty() {
         TestListResult result = serverFacade.listGames(existingAuth);
 
         assertHttpOk(result);
@@ -304,12 +303,12 @@ public class StandardAPITests {
     @Test
     @Order(12)
     @DisplayName("List Multiple Games")
-    public void gamesList() {
+    public void listGamesSuccess() {
         //register a few users to create games
         TestUser userA = new TestUser("a", "A", "a.A");
         TestUser userB = new TestUser("b", "B", "b.B");
         TestUser userC = new TestUser("c", "C", "c.C");
-        
+
         TestAuthResult authA = serverFacade.register(userA);
         TestAuthResult authB = serverFacade.register(userB);
         TestAuthResult authC = serverFacade.register(userC);
@@ -453,7 +452,7 @@ public class StandardAPITests {
     @Test
     @Order(14)
     @DisplayName("Multiple Clears")
-    public void multipleClear() {
+    public void clearMultipleTimes() {
 
         //clear multiple times
         serverFacade.clear();
