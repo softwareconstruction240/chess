@@ -24,6 +24,8 @@ public class StandardAPITests {
 
     private String existingAuth;
 
+    // ### TESTING SETUP/CLEANUP ###
+
     @AfterAll
     static void stopServer() {
         server.stop();
@@ -52,6 +54,8 @@ public class StandardAPITests {
         TestAuthResult regResult = serverFacade.register(existingUser);
         existingAuth = regResult.getAuthToken();
     }
+
+    // ### SERVER-LEVEL API TESTS ###
 
     @Test
     @Order(1)
@@ -462,6 +466,8 @@ public class StandardAPITests {
         //make sure returned good
         assertHttpOk(result);
     }
+
+    // ### HELPER ASSERTIONS ###
 
     private void assertHttpOk(TestResult result) {
         Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
