@@ -6,22 +6,16 @@ import passoff.model.*;
 import server.Server;
 
 import java.net.HttpURLConnection;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Locale;
+import java.util.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class StandardAPITests {
 
     private static TestUser existingUser;
-
     private static TestUser newUser;
-
     private static TestCreateRequest createRequest;
-
     private static TestServerFacade serverFacade;
     private static Server server;
-
     private String existingAuth;
 
     // ### TESTING SETUP/CLEANUP ###
@@ -38,11 +32,8 @@ public class StandardAPITests {
         System.out.println("Started test HTTP server on " + port);
 
         serverFacade = new TestServerFacade("localhost", Integer.toString(port));
-
         existingUser = new TestUser("ExistingUser", "existingUserPassword", "eu@mail.com");
-
         newUser = new TestUser("NewUser", "newUserPassword", "nu@mail.com");
-
         createRequest = new TestCreateRequest("testGame");
     }
 
