@@ -92,24 +92,16 @@ public class StandardAPITests {
 
     @Test
     @Order(3)
-    @DisplayName("Login Invalid User")
-    public void loginInvalidUser() {
-        TestAuthResult loginResult = serverFacade.login(newUser);
+    @DisplayName("Login Unauthorized (Multiple Forms)")
+    public void loginUnauthorized() {
+        TestUser[] unauthorizedLoginRequests = { newUser, new TestUser(existingUser.getUsername(), "BAD!PASSWORD") };
 
-        assertHttpUnauthorized(loginResult);
-        assertAuthFieldsMissing(loginResult);
-    }
+        for (TestUser unauthorizedLoginRequest : unauthorizedLoginRequests) {
+            TestAuthResult loginResult = serverFacade.login(unauthorizedLoginRequest);
 
-    @Test
-    @Order(3)
-    @DisplayName("Login Wrong Password")
-    public void loginWrongPassword() {
-        TestUser loginRequest = new TestUser(existingUser.getUsername(), newUser.getPassword());
-
-        TestAuthResult loginResult = serverFacade.login(loginRequest);
-
-        assertHttpUnauthorized(loginResult);
-        assertAuthFieldsMissing(loginResult);
+            assertHttpUnauthorized(loginResult);
+            assertAuthFieldsMissing(loginResult);
+        }
     }
 
     @Test
