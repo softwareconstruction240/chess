@@ -481,6 +481,7 @@ public class StandardAPITests {
         assertHttpOk(listResult);
         TestListEntry[] returnedList = listResult.getGames();
         Assertions.assertNotNull(returnedList, "List result did not contain a list of games");
+        Assertions.assertEquals(expectedList.length, returnedList.length, "List result contains a different number of games than expected");
 
         // The order of the games in the list is not defined.
         Comparator<TestListEntry> gameIdComparator = Comparator.comparingInt(TestListEntry::getGameID);
