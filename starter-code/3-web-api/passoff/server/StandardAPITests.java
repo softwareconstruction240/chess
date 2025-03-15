@@ -335,15 +335,7 @@ public class StandardAPITests {
 
         //list games
         TestListResult listResult = serverFacade.listGames(existingAuth);
-        assertHttpOk(listResult);
-        TestListEntry[] returnedList = listResult.getGames();
-        Assertions.assertNotNull(returnedList, "List result did not contain a list of games");
-        Comparator<TestListEntry> gameIdComparator = Comparator.comparingInt(TestListEntry::getGameID);
-        Arrays.sort(expectedList, gameIdComparator);
-        Arrays.sort(returnedList, gameIdComparator);
-
-        //check
-        Assertions.assertArrayEquals(expectedList, returnedList, "Returned Games list was incorrect");
+        assertGameListMatches(expectedList, listResult);
     }
 
     @Test
@@ -483,6 +475,20 @@ public class StandardAPITests {
     private void assertAuthFieldsMissing(TestAuthResult result) {
         Assertions.assertNull(result.getUsername(), "Response incorrectly returned username");
         Assertions.assertNull(result.getAuthToken(), "Response incorrectly return authentication String");
+    }
+
+    private void assertGameListMatches(TestListEntry[] expectedList, TestListResult listResult) {
+        assertHttpOk(listResult);
+        TestListEntry[] returnedList = listResult.getGames();
+        Assertions.assertNotNull(returnedList, "List result did not contain a list of games");
+
+        // The order of the games in the list is not defined.
+        Comparator<TestListEntry> gameIdComparator = Comparator.comparingInt(TestListEntry::getGameID);
+        Arrays.sort(expectedList, gameIdComparator);
+        Arrays.sort(returnedList, gameIdComparator);
+
+        //check
+        Assertions.assertArrayEquals(expectedList, returnedList, "Returned Games list was incorrect");
     }
 
 }
