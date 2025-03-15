@@ -380,6 +380,26 @@ public class StandardAPITests {
     }
 
     @Test
+    @Order(13)
+    @DisplayName("Duplicate Game Names Allowed")
+    public void duplicateGameNamesAllowed() {
+        String[] gameNames = {"Chess", "Fancy Chess", "Fancy Chess", "Chess"};
+
+        // Create all games and store results
+        TestListEntry[] testListEntries = new TestListEntry[gameNames.length];
+        TestCreateResult createResult;
+        for (int i = 0; i < gameNames.length; ++i) {
+            createResult = serverFacade.createGame(new TestCreateRequest(gameNames[i]), existingAuth);
+            assertHttpOk(createResult);
+            testListEntries[i] = new TestListEntry(createResult.getGameID(), gameNames[i], null, null);
+        }
+
+        // List games to verify correctness
+        TestListResult listResult = serverFacade.listGames(existingAuth);
+        assertGameListMatches(testListEntries, listResult);
+    }
+
+    @Test
     @Order(14)
     @DisplayName("Clear Test")
     public void clearData() {
