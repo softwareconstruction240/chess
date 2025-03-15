@@ -383,7 +383,7 @@ public class StandardAPITests {
     @Order(13)
     @DisplayName("Duplicate Game Names Allowed")
     public void duplicateGameNamesAllowed() {
-        String[] gameNames = {"Chess", "Fancy Chess", "Fancy Chess", "Chess"};
+        String[] gameNames = {"Chess", "Fancy Chess", "Fancy Chess", "Chess", "Untitled", "Untitled", "Untitled"};
 
         // Create all games and store results
         TestListEntry[] testListEntries = new TestListEntry[gameNames.length];
