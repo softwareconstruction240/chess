@@ -58,6 +58,7 @@ public class DatabaseManager {
      */
     static Connection getConnection() throws DataAccessException {
         try {
+            //wrapping this line with a try-with-resources block will return a closed connection
             var conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
             conn.setCatalog(DATABASE_NAME);
             return conn;
