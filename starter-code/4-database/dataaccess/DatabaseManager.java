@@ -51,7 +51,7 @@ public class DatabaseManager {
      * The easiest way to do that is with a try-with-resource block.
      * <br/>
      * <code>
-     * try (var conn = DatabaseManager.getConnection(databaseName)) {
+     * try (var conn = DatabaseManager.getConnection()) {
      * // execute SQL statements.
      * }
      * </code>
