@@ -15,7 +15,7 @@ public class DatabaseManager {
     static {
         try (var propStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("db.properties")) {
             if (propStream == null) {
-                throw new Exception("Unable to load db.properties");
+                throw new Exception("file could not be found");
             }
             Properties props = new Properties();
             props.load(propStream);
@@ -27,7 +27,7 @@ public class DatabaseManager {
             var port = Integer.parseInt(props.getProperty("db.port"));
             CONNECTION_URL = String.format("jdbc:mysql://%s:%d", host, port);
         } catch (Exception ex) {
-            throw new RuntimeException("unable to process db.properties. " + ex.getMessage());
+            throw new RuntimeException("unable to process db.properties", ex);
         }
     }
 
@@ -39,8 +39,8 @@ public class DatabaseManager {
         try (var conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
              var preparedStatement = conn.prepareStatement(statement)) {
             preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            throw new DataAccessException("Failed to create database", e);
+        } catch (SQLException ex) {
+            throw new DataAccessException("failed to create database", ex);
         }
     }
 
@@ -62,8 +62,8 @@ public class DatabaseManager {
             var conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
             conn.setCatalog(DATABASE_NAME);
             return conn;
-        } catch (SQLException e) {
-            throw new DataAccessException("Failed to get connection", e);
+        } catch (SQLException ex) {
+            throw new DataAccessException("failed to get connection", ex);
         }
     }
 }
