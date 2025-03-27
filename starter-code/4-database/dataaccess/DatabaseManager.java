@@ -15,7 +15,7 @@ public class DatabaseManager {
     static {
         try (var propStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("db.properties")) {
             if (propStream == null) {
-                throw new Exception("file could not be found");
+                throw new Exception("file \"db.properties\" could not be found");
             }
             Properties props = new Properties();
             props.load(propStream);
