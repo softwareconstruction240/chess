@@ -375,8 +375,8 @@ public class WebSocketTests {
     }
 
     private void assertMessages(String username, ServerMessage.ServerMessageType[] expectedTypes, List<TestMessage> messages, String description) {
-        Assertions.assertEquals(expectedTypes.length, messages.size(), "For command '%s' user '%s' expected %d messages, got %d: %s"
-                .formatted(description, username, expectedTypes.length, messages.size(), messages));
+        Assertions.assertEquals(expectedTypes.length, messages.size(), "For command '%s' user '%s' expected %d messages with types %s, got %d: %s"
+                .formatted(description, username, expectedTypes.length, Arrays.toString(expectedTypes), messages.size(), messages));
         Arrays.sort(expectedTypes);
         messages.sort(Comparator.comparing(TestMessage::getServerMessageType));
         try {
