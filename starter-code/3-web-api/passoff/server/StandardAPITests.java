@@ -187,6 +187,16 @@ public class StandardAPITests {
     }
 
     @Test
+    @Order(9)
+    @DisplayName("Create Bad Request")
+    public void createGameBadRequest() {
+        TestCreateResult createResult = serverFacade.createGame(new TestCreateRequest(null), existingAuth);
+
+        assertHttpBadRequest(createResult);
+        Assertions.assertNull(createResult.getGameID(), "Bad result returned a game ID");
+    }
+
+    @Test
     @Order(10)
     @DisplayName("Join Created Game")
     public void joinGameSuccess() {
