@@ -44,6 +44,8 @@ public class StandardAPITests {
         //one user already logged in
         TestAuthResult regResult = serverFacade.register(existingUser);
         existingAuth = regResult.getAuthToken();
+        Assertions.assertNotNull(existingAuth, "Initial register did not contain an authentication string. " +
+                "Did you implement register and clear first?");
     }
 
     // ### SERVER-LEVEL API TESTS ###
