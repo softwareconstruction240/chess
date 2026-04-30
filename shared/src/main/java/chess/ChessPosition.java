@@ -21,7 +21,7 @@ public class ChessPosition {
 
     /**
      * @return which column this position is in
-     * 1 codes for the left row
+     * 1 codes for the left column
      */
     public int getColumn() {
         throw new RuntimeException("Not implemented");

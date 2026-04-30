@@ -3,7 +3,7 @@ package chess;
 import java.util.Collection;
 
 /**
- * For a class that can manage a chess game, making moves on a board
+ * A class that can manage a chess game, making moves on a board
  * <p>
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
@@ -22,7 +22,7 @@ public class ChessGame {
     }
 
     /**
-     * Set's which teams turn it is
+     * Sets which teams turn it is
      *
      * @param team the team whose turn it is
      */
@@ -39,7 +39,7 @@ public class ChessGame {
     }
 
     /**
-     * Gets a valid moves for a piece at the given location
+     * Gets all valid moves for a piece at the given location
      *
      * @param startPosition the piece to get valid moves for
      * @return Set of valid moves for requested piece, or null if no piece at
@@ -50,7 +50,7 @@ public class ChessGame {
     }
 
     /**
-     * Makes a move in a chess game
+     * Makes a move in the chess game
      *
      * @param move chess move to perform
      * @throws InvalidMoveException if move is invalid
@@ -91,7 +91,7 @@ public class ChessGame {
     }
 
     /**
-     * Sets this game's chessboard with a given board
+     * Sets this game's chessboard to a given board
      *
      * @param board the new board to use
      */
