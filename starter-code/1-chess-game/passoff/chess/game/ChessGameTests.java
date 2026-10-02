@@ -24,45 +24,57 @@ public class ChessGameTests extends EqualsTestingUtility<ChessGame> {
     protected Collection<ChessGame> buildAllDifferent() {
         Collection<ChessGame> differentGames = new ArrayList<>();
 
-        try {
-            // Different team turn
-            ChessGame game1 = new ChessGame();
-            game1.setTeamTurn(ChessGame.TeamColor.BLACK);
-            differentGames.add(game1);
+        // Different team turn
+        ChessGame game1 = new ChessGame();
+        game1.setTeamTurn(ChessGame.TeamColor.BLACK);
+        differentGames.add(game1);
 
-            // Move pawn
-            ChessGame game2 = new ChessGame();
-            game2.makeMove(new ChessMove(
-                    new ChessPosition(2, 5),
-                    new ChessPosition(4, 5),
-                    null));
-            differentGames.add(game2);
+        // Set board 1
+        ChessGame game2 = new ChessGame();
+        game2.setBoard(
+            TestUtilities.loadBoard("""
+                | | | |R| | | | |
+                | | | | | | | | |
+                | | |p|n|p| | | |
+                |R| |n|k|r| | |R|
+                | | |p|q|P| | | |
+                | | | | |K| | | |
+                | | |P|P|P|P|P|P|
+                |R|N|B|Q|K|B|N|R|
+                """)
+        );
+        differentGames.add(game2);
 
-            // Move knight
-            ChessGame game3 = new ChessGame();
-            game3.makeMove(new ChessMove(
-                    new ChessPosition(1, 7),
-                    new ChessPosition(3, 6),
-                    null));
-            differentGames.add(game3);
+        // Set board 2
+        ChessGame game3 = new ChessGame();
+        game3.setBoard(
+            TestUtilities.loadBoard("""
+                | | |B|R| |P| | |
+                | |P| | |n| |q| |
+                | | | |n|p| | | |
+                |R| |n|k|r| |r| |
+                | | |p|q|P| | |R|
+                | |B| | |K| | | |
+                | | |P|P|P|P|P| |
+                |R| | |Q| | |N| |
+                """)
+        );
+        differentGames.add(game3);
 
-            // Set board
-            ChessGame game4 = new ChessGame();
-            game4.setBoard(TestUtilities.loadBoard("""
-                    | | | |R| | | | |
-                    | | | | | | | | |
-                    | | |p|n|p| | | |
-                    |R| |n|k|r| | |R|
-                    | | |p|q| | | | |
-                    | | | | | |K| | |
-                    | | | | |P| | | |
-                    | | | |R| | | | |
-                    """));
-            differentGames.add(game4);
-
-        } catch (InvalidMoveException e) {
-            throw new RuntimeException("All moves in ChessGameTests are valid and should be allowed.", e);
-        }
+        // Set board and different team turn
+        ChessGame game4 = new ChessGame();
+        game4.setBoard(TestUtilities.loadBoard("""
+                | | | |R| | | | |
+                | | | | | | | | |
+                | | |p|n|p| | | |
+                |R| |n|k|r| | |R|
+                | | |p|q| | | | |
+                | | | | | |K| | |
+                | | | | |P| | | |
+                | | | |R| | | | |
+                """));
+        game4.setTeamTurn(ChessGame.TeamColor.BLACK);
+        differentGames.add(game4);
 
         return differentGames;
     }
